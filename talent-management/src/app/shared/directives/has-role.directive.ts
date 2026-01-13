@@ -5,11 +5,11 @@ import { Subscription } from 'rxjs';
 /**
  * Structural directive to show/hide elements based on user roles
  * Usage:
- * <div *hasRole="'HRAdmin'">Only HRAdmin can see this</div>
- * <div *hasRole="['Manager', 'HRAdmin']">Managers and HRAdmins can see this</div>
+ * <div *appHasRole="'HRAdmin'">Only HRAdmin can see this</div>
+ * <div *appHasRole="['Manager', 'HRAdmin']">Managers and HRAdmins can see this</div>
  */
 @Directive({
-  selector: '[hasRole]',
+  selector: '[appHasRole]',
   standalone: true,
 })
 export class HasRoleDirective implements OnInit, OnDestroy {
@@ -18,7 +18,7 @@ export class HasRoleDirective implements OnInit, OnDestroy {
   private viewContainer = inject(ViewContainerRef);
   private subscription?: Subscription;
 
-  @Input() set hasRole(roles: string | string[]) {
+  @Input() set appHasRole(roles: string | string[]) {
     this.updateView(roles);
   }
 
