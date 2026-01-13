@@ -53,20 +53,15 @@ export class OidcAuthService {
   }
 
   /**
-   * Initialize authentication - loads discovery document and tries silent login
+   * Initialize authentication - loads discovery document and tries to process login
    */
   async initAuth(): Promise<boolean> {
     try {
       // Load discovery document (OIDC metadata from /.well-known/openid-configuration)
       await this.oauthService.loadDiscoveryDocument();
 
-      // Try silent login (checks if user has valid session)
-      const hasValidToken = await this.oauthService.tryLoginImplicitFlow();
-
-      if (hasValidToken) {
-        await this.handleSuccessfulLogin();
-        return true;
-      }
+      // Try to login using authorization code flow (processes callback if present)
+      await this.oauthService.tryLogin();
 
       // Check if we have a valid access token
       if (this.oauthService.hasValidAccessToken()) {
