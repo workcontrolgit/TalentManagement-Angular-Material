@@ -1,0 +1,37 @@
+<page-header></page-header>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ getFormTitle() }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+      <div class="form-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Department Name</mat-label>
+          <input matInput formControlName="name" />
+          <mat-error *ngIf="departmentForm.get('name')?.hasError('required')">
+            Department name is required
+          </mat-error>
+          <mat-error *ngIf="departmentForm.get('name')?.hasError('maxlength')">
+            Department name cannot exceed 100 characters
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" mat-stroked-button (click)="onCancel()">
+          Cancel
+        </button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="loading">
+          {{ isEditMode ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

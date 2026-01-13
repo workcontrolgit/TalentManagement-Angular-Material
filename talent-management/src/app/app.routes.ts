@@ -13,6 +13,8 @@ import { hrAdminGuard } from './core/authentication/role.guard';
 import { EmployeeListComponent } from './routes/employees/employee-list.component';
 import { EmployeeDetailComponent } from './routes/employees/employee-detail.component';
 import { EmployeeFormComponent } from './routes/employees/employee-form.component';
+import { DepartmentListComponent } from './routes/departments/department-list.component';
+import { DepartmentFormComponent } from './routes/departments/department-form.component';
 
 export const routes: Routes = [
   {
@@ -27,6 +29,9 @@ export const routes: Routes = [
       { path: 'employees/create', component: EmployeeFormComponent, canActivate: [hrAdminGuard] },
       { path: 'employees/edit/:id', component: EmployeeFormComponent, canActivate: [hrAdminGuard] },
       { path: 'employees/:id', component: EmployeeDetailComponent },
+      { path: 'departments', component: DepartmentListComponent },
+      { path: 'departments/create', component: DepartmentFormComponent, canActivate: [hrAdminGuard] },
+      { path: 'departments/edit/:id', component: DepartmentFormComponent, canActivate: [hrAdminGuard] },
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },
