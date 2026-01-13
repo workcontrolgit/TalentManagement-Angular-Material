@@ -20,7 +20,9 @@
 .matero-user-panel-avatar {
   width: 3rem;
   height: 3rem;
+  font-size: 3rem;
   border-radius: 50rem;
+  color: rgba(0, 0, 0, 0.54);
   transform-origin: 0 1.5rem;
   transition: transform mat.$private-swift-ease-out-duration mat.$private-swift-ease-out-timing-function;
 
