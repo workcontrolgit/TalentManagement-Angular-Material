@@ -1,21 +1,28 @@
 import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthService, SettingsService } from '@core';
+import { SettingsService } from '@core';
+import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
 
 @Component({
   selector: 'app-user',
   template: `
     <button matIconButton [matMenuTriggerFor]="menu">
-      <img class="avatar" [src]="user()?.avatar" width="24" alt="avatar" />
+      <mat-icon>account_circle</mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
+      <div class="user-info">
+        <div class="user-name">{{ getUserName() }}</div>
+        <div class="user-email">{{ getUserEmail() }}</div>
+        <div class="user-roles">{{ getUserRoles() }}</div>
+      </div>
+      <mat-divider></mat-divider>
       <button routerLink="/profile/overview" mat-menu-item>
         <mat-icon>account_circle</mat-icon>
         <span>{{ 'profile' | translate }}</span>
@@ -35,25 +42,54 @@ import { AuthService, SettingsService } from '@core';
     </mat-menu>
   `,
   styles: `
-    .avatar {
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: 50rem;
+    .user-info {
+      padding: 16px;
+      max-width: 250px;
+
+      .user-name {
+        font-weight: 500;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+
+      .user-email {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.6);
+        margin-bottom: 4px;
+      }
+
+      .user-roles {
+        font-size: 11px;
+        color: rgba(0, 0, 0, 0.5);
+        font-style: italic;
+      }
     }
   `,
-  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslateModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule, TranslateModule],
 })
 export class UserButton {
-  private readonly auth = inject(AuthService);
+  private readonly oidcAuth = inject(OidcAuthService);
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
 
-  user = toSignal(this.auth.user());
+  getUserName(): string {
+    const userInfo = this.oidcAuth.getUserInfo();
+    return userInfo?.name || 'Guest';
+  }
+
+  getUserEmail(): string {
+    const userInfo = this.oidcAuth.getUserInfo();
+    return userInfo?.email || '';
+  }
+
+  getUserRoles(): string {
+    const roles = this.oidcAuth.getUserRoles();
+    return roles.length > 0 ? roles.join(', ') : 'No roles';
+  }
 
   logout() {
-    this.auth.logout().subscribe(() => {
-      this.router.navigateByUrl('/auth/login');
-    });
+    this.oidcAuth.logout();
+    this.router.navigateByUrl('/login');
   }
 
   restore() {
