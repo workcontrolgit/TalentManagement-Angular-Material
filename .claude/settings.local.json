@@ -3,7 +3,11 @@
     "allow": [
       "Bash(ng version:*)",
       "Bash(ng new:*)",
-      "Bash(ng add:*)"
+      "Bash(ng add:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(timeout:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

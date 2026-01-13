@@ -2,7 +2,7 @@
   "x-generator": "NSwag v14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
-    "title": "Clean Architecture - NguyenCorpHR.WebApi",
+    "title": "Clean Architecture - MyOnion.WebApi",
     "description": "This Api will be responsible for overall data distribution and authorization.",
     "contact": {
       "name": "Jane Doe",
@@ -46,6 +46,56 @@
             }
           }
         }
+      }
+    },
+    "/api/v1/cache/invalidate": {
+      "post": {
+        "tags": [
+          "Cache"
+        ],
+        "operationId": "Cache_Invalidate",
+        "parameters": [
+          {
+            "name": "invalidateAll",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CacheInvalidationRequest"
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/v1/Departments": {
@@ -517,41 +567,6 @@
         "responses": {
           "200": {
             "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Employees/Paged": {
-      "post": {
-        "tags": [
-          "Employees"
-        ],
-        "summary": "Retrieves a paged list of employees.\nSupport Ngx-DataTables https://medium.com/scrum-and-coke/angular-11-pagination-of-zillion-rows-45d8533538c0",
-        "operationId": "Employees_Paged",
-        "requestBody": {
-          "x-name": "query",
-          "description": "The query parameters for the paged list.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PagedEmployeesQuery"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "A paged list of employees.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -1085,6 +1100,23 @@
           }
         }
       },
+      "CacheInvalidationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "prefix": {
+            "type": "string",
+            "nullable": true
+          },
+          "invalidateAll": {
+            "type": "boolean"
+          }
+        }
+      },
       "CreateDepartmentCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1106,143 +1138,6 @@
           "name": {
             "type": "string",
             "nullable": true
-          }
-        }
-      },
-      "PagedEmployeesQuery": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/QueryParameter"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "draw": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "start": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "length": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "order": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/SortOrder"
-                }
-              },
-              "search": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Search"
-                  }
-                ]
-              },
-              "columns": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/Column"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "SortOrder": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "column": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "dir": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "Search": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "value": {
-            "type": "string",
-            "nullable": true
-          },
-          "regex": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Column": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "data": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "searchable": {
-            "type": "boolean"
-          },
-          "orderable": {
-            "type": "boolean"
-          },
-          "search": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Search"
-              }
-            ]
-          }
-        }
-      },
-      "QueryParameter": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PagingParameter"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "orderBy": {
-                "type": "string",
-                "nullable": true
-              },
-              "fields": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "PagingParameter": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },

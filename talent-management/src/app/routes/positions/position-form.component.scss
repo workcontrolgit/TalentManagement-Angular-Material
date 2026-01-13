@@ -1,0 +1,46 @@
+mat-card {
+  margin: 16px;
+  max-width: 800px;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+  mat-card-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+mat-card-content {
+  padding: 16px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}

@@ -1,0 +1,67 @@
+<page-header></page-header>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Salary Ranges</mat-card-title>
+    <span class="flex-spacer"></span>
+    <button mat-raised-button color="primary" (click)="createSalaryRange()" *appHasRole="['HRAdmin', 'Manager']">
+      <mat-icon>add</mat-icon>
+      Add Salary Range
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="table-container">
+      <div *ngIf="loading" class="loading-spinner">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <table mat-table [dataSource]="salaryRanges" class="salary-range-table" *ngIf="!loading && salaryRanges.length > 0">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Range Name</th>
+          <td mat-cell *matCellDef="let salaryRange">{{ salaryRange.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="minSalary">
+          <th mat-header-cell *matHeaderCellDef>Minimum Salary</th>
+          <td mat-cell *matCellDef="let salaryRange">{{ salaryRange.minSalary | currency:'USD':'symbol':'1.0-0' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="maxSalary">
+          <th mat-header-cell *matHeaderCellDef>Maximum Salary</th>
+          <td mat-cell *matCellDef="let salaryRange">{{ salaryRange.maxSalary | currency:'USD':'symbol':'1.0-0' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="mat-column-actions">Actions</th>
+          <td mat-cell *matCellDef="let salaryRange" class="mat-column-actions">
+            <button mat-icon-button color="primary" (click)="editSalaryRange(salaryRange)" matTooltip="Edit" *appHasRole="['HRAdmin', 'Manager']">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteSalaryRange(salaryRange)" matTooltip="Delete" *appHasRole="['HRAdmin']">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="!loading && salaryRanges.length === 0" class="no-data">
+        <mat-icon>money_off</mat-icon>
+        <p>No salary ranges found</p>
+      </div>
+    </div>
+
+    <mat-paginator
+      *ngIf="!loading && salaryRanges.length > 0"
+      [length]="totalCount"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageNumber - 1"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>
