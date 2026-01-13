@@ -21,16 +21,17 @@ export class StartupService {
    */
   load() {
     return new Promise<void>((resolve, reject) => {
-      // Load menu from JSON file
+      // Load menu from JSON file (public folder is served from root)
       this.http
-        .get<{ menu: Menu[] }>('assets/data/menu.json')
+        .get<{ menu: Menu[] }>('data/menu.json')
         .pipe(tap(response => this.setMenu(response.menu)))
         .subscribe({
           next: () => {
             this.setPermissions();
             resolve();
           },
-          error: () => {
+          error: (err) => {
+            console.error('Error loading menu:', err);
             this.setPermissions();
             resolve();
           },
