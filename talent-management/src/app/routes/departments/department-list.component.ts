@@ -1,15 +1,16 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { PageHeader } from '@shared/components/page-header/page-header';
-import { Department, PagedResponse, PaginationParams } from '../../models';
+import { Department } from '../../models';
 import { DepartmentService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
 import { HasRoleDirective } from '../../shared/directives/has-role.directive';
@@ -24,6 +25,7 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,
+    MatSortModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
     PageHeader,
@@ -32,19 +34,16 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
   templateUrl: './department-list.component.html',
   styleUrl: './department-list.component.scss',
 })
-export class DepartmentListComponent implements OnInit {
+export class DepartmentListComponent implements OnInit, AfterViewInit {
   private departmentService = inject(DepartmentService);
   private authService = inject(OidcAuthService);
   private router = inject(Router);
 
-  departments: Department[] = [];
-  loading = false;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  // Pagination
-  totalCount = 0;
-  pageSize = 10;
-  pageNumber = 1;
-  pageSizeOptions = [5, 10, 25, 50];
+  dataSource = new MatTableDataSource<Department>([]);
+  loading = false;
 
   // Table columns
   displayedColumns: string[] = ['name', 'actions'];
@@ -53,19 +52,17 @@ export class DepartmentListComponent implements OnInit {
     this.loadDepartments();
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
   loadDepartments(): void {
     this.loading = true;
 
-    const params: PaginationParams = {
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize,
-      orderBy: 'name',
-    };
-
-    this.departmentService.getPaged(params).subscribe({
-      next: (response: PagedResponse<Department>) => {
-        this.departments = response.items;
-        this.totalCount = response.totalCount;
+    this.departmentService.getAll().subscribe({
+      next: (departments: Department[]) => {
+        this.dataSource.data = departments;
         this.loading = false;
       },
       error: error => {
@@ -73,12 +70,6 @@ export class DepartmentListComponent implements OnInit {
         this.loading = false;
       },
     });
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.pageSize = event.pageSize;
-    this.pageNumber = event.pageIndex + 1;
-    this.loadDepartments();
   }
 
   viewDepartment(department: Department): void {
