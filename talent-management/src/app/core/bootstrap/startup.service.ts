@@ -1,14 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { AuthService, User } from '@core/authentication';
+import { HttpClient } from '@angular/common/http';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { switchMap, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { Menu, MenuService } from './menu.service';
+import { OidcAuthService } from '../authentication/oidc-auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StartupService {
-  private readonly authService = inject(AuthService);
+  private readonly http = inject(HttpClient);
+  private readonly oidcAuth = inject(OidcAuthService);
   private readonly menuService = inject(MenuService);
   private readonly permissonsService = inject(NgxPermissionsService);
   private readonly rolesService = inject(NgxRolesService);
@@ -19,16 +21,19 @@ export class StartupService {
    */
   load() {
     return new Promise<void>((resolve, reject) => {
-      this.authService
-        .change()
-        .pipe(
-          tap(user => this.setPermissions(user)),
-          switchMap(() => this.authService.menu()),
-          tap(menu => this.setMenu(menu))
-        )
+      // Load menu from JSON file
+      this.http
+        .get<{ menu: Menu[] }>('assets/data/menu.json')
+        .pipe(tap(response => this.setMenu(response.menu)))
         .subscribe({
-          next: () => resolve(),
-          error: () => resolve(),
+          next: () => {
+            this.setPermissions();
+            resolve();
+          },
+          error: () => {
+            this.setPermissions();
+            resolve();
+          },
         });
     });
   }
@@ -38,14 +43,27 @@ export class StartupService {
     this.menuService.set(menu);
   }
 
-  private setPermissions(user: User) {
-    // In a real app, you should get permissions and roles from the user information.
+  private setPermissions() {
+    // Get roles from OIDC token
+    const roles = this.oidcAuth.getUserRoles();
+
+    // Define permissions based on roles
     const permissions = ['canAdd', 'canDelete', 'canEdit', 'canRead'];
     this.permissonsService.loadPermissions(permissions);
-    this.rolesService.flushRoles();
-    this.rolesService.addRoles({ ADMIN: permissions });
 
-    // Tips: Alternatively you can add permissions with role at the same time.
-    // this.rolesService.addRolesWithPermissions({ ADMIN: permissions });
+    // Flush existing roles and add new ones
+    this.rolesService.flushRoles();
+
+    // Add roles with all permissions
+    // In a real app, you would map specific permissions to specific roles
+    if (roles.includes('HRAdmin')) {
+      this.rolesService.addRoles({ HRAdmin: permissions });
+    }
+    if (roles.includes('Manager')) {
+      this.rolesService.addRoles({ Manager: permissions });
+    }
+    if (roles.includes('Employee')) {
+      this.rolesService.addRoles({ Employee: ['canRead'] });
+    }
   }
 }
