@@ -13,7 +13,7 @@
       "icon": "people",
       "children": [
         {
-          "route": "employees/list",
+          "route": "employees",
           "name": "employeeList",
           "type": "link"
         },
