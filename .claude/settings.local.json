@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ng version:*)",
+      "Bash(ng new:*)",
+      "Bash(ng add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

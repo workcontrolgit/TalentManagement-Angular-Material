@@ -1,0 +1,69 @@
+{
+  "menu": [
+    {
+      "route": "dashboard",
+      "name": "dashboard",
+      "type": "link",
+      "icon": "dashboard"
+    },
+    {
+      "route": "employees",
+      "name": "employees",
+      "type": "sub",
+      "icon": "people",
+      "children": [
+        {
+          "route": "employees/list",
+          "name": "employeeList",
+          "type": "link"
+        },
+        {
+          "route": "employees/create",
+          "name": "addEmployee",
+          "type": "link"
+        }
+      ]
+    },
+    {
+      "route": "departments",
+      "name": "departments",
+      "type": "link",
+      "icon": "business"
+    },
+    {
+      "route": "positions",
+      "name": "positions",
+      "type": "link",
+      "icon": "work"
+    },
+    {
+      "route": "salary-ranges",
+      "name": "salaryRanges",
+      "type": "link",
+      "icon": "attach_money"
+    },
+    {
+      "route": "/",
+      "name": "sessions",
+      "type": "sub",
+      "icon": "question_answer",
+      "children": [
+        {
+          "route": "403",
+          "name": "403",
+          "type": "link"
+        },
+        {
+          "route": "404",
+          "name": "404",
+          "type": "link"
+        },
+        {
+          "route": "500",
+          "name": "500",
+          "type": "link"
+        }
+      ]
+    }
+  ]
+}

@@ -1,12 +1,13 @@
-# NguyenCorpHR Angular Dashboard - Project Implementation Plan
+# Talent Management - Project Implementation Plan
 
 ## Project Overview
 
-**Project Name:** NguyenCorpHR HR Management Dashboard
+**Project Name:** Talent Management
 **Backend API:** Clean Architecture .NET Web API (https://localhost:44378)
 **Frontend Framework:** Angular with ng-matero Dashboard Template
-**Authentication:** Duende IdentityServer with Anonymous Access Support
+**Authentication:** Duende IdentityServer (Client: TalentManagement)
 **API Version:** v1
+**User Roles:** Employee, Manager, HRAdmin
 
 ---
 
@@ -135,24 +136,29 @@ The API manages an HR system with the following main entities:
    - Limited navigation menu
 
 2. **Authenticated User Experience**
-   - Full CRUD operations on all entities
-   - Access to all features
-   - User profile display
+   - Role-based access control with three roles:
+     - **Employee**: View own profile, view public employee directory
+     - **Manager**: View team members, limited employee management
+     - **HRAdmin**: Full CRUD operations on all entities
+   - User profile display with role indicator
    - Logout functionality
-   - Role-based permissions (future enhancement)
+   - Access levels enforced via role claims from JWT tokens
 
-3. **OIDC Configuration**
+3. **OIDC Configuration** (using `angular-oauth2-oidc` package)
    ```typescript
-   {
-     issuer: 'https://your-identity-server',
-     clientId: 'nguyencorphr-angular-client',
-     responseType: 'code',
+   import { AuthConfig } from 'angular-oauth2-oidc';
+
+   export const authConfig: AuthConfig = {
+     issuer: 'https://localhost:44310',
      redirectUri: window.location.origin + '/callback',
+     clientId: 'TalentManagement',
+     responseType: 'code',
      scope: 'openid profile email api',
+     showDebugInformation: true,
      useSilentRefresh: true,
-     requireHttps: true,
+     requireHttps: false,  // Set to true in production
      strictDiscoveryDocumentValidation: false
-   }
+   };
    ```
 
 ### HTTP Interceptor Strategy
@@ -162,7 +168,7 @@ The API manages an HR system with the following main entities:
 3. **Loading Interceptor** - Show/hide loading indicators
 4. **Anonymous Access Interceptor** - Skip auth for public routes
 
-### Route Protection
+### Route Protection & Role-Based Access
 
 ```typescript
 // Public routes (anonymous access)
@@ -171,7 +177,18 @@ The API manages an HR system with the following main entities:
 - /callback (OIDC redirect)
 - /public/** (any public pages)
 
-// Protected routes (require authentication)
+// Employee role (authenticated - read-only)
+- /employees (view list)
+- /employees/:id (view own profile)
+- /profile (view/edit own profile)
+
+// Manager role (authenticated - team management)
+- All Employee routes
+- /employees/:id (view team members)
+- /reports/team (team reports)
+
+// HRAdmin role (authenticated - full CRUD)
+- All Employee and Manager routes
 - /employees/create
 - /employees/edit/:id
 - /departments/manage
@@ -215,8 +232,8 @@ npm install --save-dev @types/node
 export const environment = {
   production: false,
   apiUrl: 'https://localhost:44378/api/v1',
-  identityServerUrl: 'https://your-identity-server',
-  clientId: 'nguyencorphr-angular-client',
+  identityServerUrl: 'https://localhost:44310',
+  clientId: 'TalentManagement',
   scope: 'openid profile email api',
   allowAnonymousAccess: true
 };
@@ -240,14 +257,26 @@ export const environment = {
 **Duration:** 3-4 days
 **Status:** Pending Approval
 
-### 2.1 OIDC Integration
-- [ ] Install and configure angular-oauth2-oidc
-- [ ] Create AuthService with OIDC configuration
-- [ ] Implement login/logout flows
-- [ ] Configure PKCE for security
-- [ ] Test token acquisition and refresh
+### 2.1 OIDC Integration (using angular-oauth2-oidc package)
+- [ ] Install angular-oauth2-oidc: `npm install angular-oauth2-oidc`
+- [ ] Create AuthService with OIDC configuration (AuthConfig)
+- [ ] Configure discovery document from `https://localhost:44310/.well-known/openid-configuration`
+- [ ] Implement login flow using Authorization Code Flow with PKCE
+- [ ] Implement logout flow (end_session_endpoint)
+- [ ] Configure token storage (sessionStorage or localStorage)
+- [ ] Extract and parse role claims from JWT token (Employee, Manager, HRAdmin)
+- [ ] Set up silent token refresh
+- [ ] Test token acquisition and automatic refresh
 
-### 2.2 Anonymous Access Support
+### 2.2 Role-Based Access Control
+- [ ] Create RoleGuard for role-based route protection
+- [ ] Implement role claim extraction from access token
+- [ ] Create role-based directives (e.g., *hasRole="HRAdmin")
+- [ ] Add role-checking service methods (isEmployee(), isManager(), isHRAdmin())
+- [ ] Configure route guards for Employee, Manager, and HRAdmin roles
+- [ ] Test role-based access restrictions
+
+### 2.3 Anonymous Access Support
 - [ ] Create AnonymousGuard for public routes
 - [ ] Create AuthGuard for protected routes
 - [ ] Implement route-based access control
@@ -270,16 +299,20 @@ export const environment = {
 ### 2.5 UI Components
 - [ ] Create login page/dialog
 - [ ] Add user profile menu (for authenticated users)
+- [ ] Display user role badge (Employee/Manager/HRAdmin)
 - [ ] Create "Login" button (for anonymous users)
 - [ ] Add authentication status indicator
 - [ ] Create callback/redirect page
+- [ ] Show/hide menu items based on user role
 
 **Deliverables:**
-- ✓ Working OIDC authentication
+- ✓ Working OIDC authentication with TalentManagement client
+- ✓ Role-based access control (Employee, Manager, HRAdmin)
 - ✓ Anonymous access mode functional
 - ✓ Login/logout flows working
 - ✓ Token management implemented
 - ✓ HTTP interceptors configured
+- ✓ Role claims extracted and enforced
 
 ---
 
@@ -689,26 +722,32 @@ export const environment = {
 
 ### 🔄 Decisions Requiring Client Input
 
-1. **Duende IdentityServer Configuration**
-   - What is the IdentityServer URL?
-   - What is the client ID for this Angular app?
-   - What scopes are available?
-   - Is client registration already done?
+1. **Duende IdentityServer Configuration** ✅ CONFIRMED
+   - ✅ IdentityServer URL: `https://localhost:44310`
+   - ✅ Client ID: `TalentManagement`
+   - ✅ Application Name: Talent Management
+   - ✅ Roles: Employee, Manager, HRAdmin
+   - ❓ What scopes are available?
+   - ❓ Is client registration already done?
 
 2. **Anonymous Access Rules**
    - Which endpoints/features should be public?
    - Should anonymous users see employee data?
    - Any restrictions on data visibility?
 
-3. **Role-Based Access Control**
-   - Will there be different user roles (Admin, HR, Manager, etc.)?
-   - Should role-based permissions be implemented now or later?
+3. **Role-Based Access Control** ✅ CONFIRMED
+   - ✅ Three roles defined: Employee, Manager, HRAdmin
+   - Employee: View own profile and public directory
+   - Manager: View team members, limited management
+   - HRAdmin: Full CRUD on all entities
+   - Permissions enforced via JWT role claims
 
 4. **Deployment Platform**
    - Where will this be hosted? (Azure, AWS, on-premise, etc.)
    - What is the production URL?
 
 5. **Branding & Theming**
+   - Application Name: "Talent Management"
    - Company logo and colors?
    - Specific branding requirements?
 
@@ -731,7 +770,8 @@ export const environment = {
 ## Success Criteria
 
 ### Must-Have Features
-- ✓ Working authentication with Duende IdentityServer
+- ✓ Working authentication with Duende IdentityServer (TalentManagement client)
+- ✓ Role-based access control (Employee, Manager, HRAdmin)
 - ✓ Anonymous user access (view-only mode)
 - ✓ Complete CRUD for all entities (Employees, Departments, Positions, Salary Ranges)
 - ✓ Responsive design (mobile, tablet, desktop)
@@ -744,7 +784,7 @@ export const environment = {
 - Data visualizations and charts
 - Real-time updates
 - Audit logging
-- Role-based access control (future enhancement)
+- Fine-grained role permissions (beyond Employee, Manager, HRAdmin)
 
 ---
 
@@ -753,21 +793,32 @@ export const environment = {
 Please review this plan and provide:
 
 1. **Approval to proceed** with this plan
-2. **Duende IdentityServer configuration details**:
-   - IdentityServer URL
-   - Client ID
-   - Available scopes
-   - Any specific OIDC requirements
 
-3. **Anonymous access requirements**:
+2. **Duende IdentityServer configuration details**:
+   - ✅ IdentityServer URL: `https://localhost:44310`
+   - ✅ Discovery Document: `https://localhost:44310/.well-known/openid-configuration`
+   - ✅ Client ID: `TalentManagement`
+   - ✅ Application Name: Talent Management
+   - ✅ Roles: Employee, Manager, HRAdmin
+   - ❓ Available scopes (suggest: `openid profile email api role`)
+   - ❓ Registered redirect URIs (e.g., `http://localhost:4200/callback`)
+   - ❓ Post-logout redirect URIs
+   - ❓ Is the client already registered in IdentityServer?
+
+3. **Role-Based Permissions** ✅ CONFIRMED:
+   - Employee: View own profile, view public employee directory
+   - Manager: All Employee permissions + view team members
+   - HRAdmin: Full CRUD operations on all entities
+
+4. **Anonymous access requirements**:
    - Which features should be public?
    - Data visibility rules for unauthenticated users
 
-4. **Priority adjustments** (if any phases should be reordered)
+5. **Priority adjustments** (if any phases should be reordered)
 
-5. **Any additional requirements** not covered in this plan
+6. **Any additional requirements** not covered in this plan
 
-Once approved, I will proceed with Phase 1: Project Initialization & Setup.
+Once approved, I will proceed with Phase 1: Project Initialization & Setup using the **angular-oauth2-oidc** package for OIDC authentication.
 
 ---
 
