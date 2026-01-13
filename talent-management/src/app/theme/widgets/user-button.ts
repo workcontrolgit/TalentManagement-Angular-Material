@@ -12,7 +12,7 @@ import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
 @Component({
   selector: 'app-user',
   template: `
-    <button matIconButton [matMenuTriggerFor]="menu">
+    <button matIconButton [matMenuTriggerFor]="menu" class="user-button">
       <mat-icon>account_circle</mat-icon>
     </button>
 
@@ -42,6 +42,14 @@ import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
     </mat-menu>
   `,
   styles: `
+    :host {
+      display: inline-block;
+    }
+
+    .user-button {
+      display: inline-flex !important;
+    }
+
     .user-info {
       padding: 16px;
       max-width: 250px;
@@ -73,16 +81,25 @@ export class UserButton {
   private readonly settings = inject(SettingsService);
 
   getUserName(): string {
+    if (!this.oidcAuth.isAuthenticated()) {
+      return 'Guest';
+    }
     const userInfo = this.oidcAuth.getUserInfo();
-    return userInfo?.name || 'Guest';
+    return userInfo?.name || userInfo?.preferred_username || 'User';
   }
 
   getUserEmail(): string {
+    if (!this.oidcAuth.isAuthenticated()) {
+      return '';
+    }
     const userInfo = this.oidcAuth.getUserInfo();
     return userInfo?.email || '';
   }
 
   getUserRoles(): string {
+    if (!this.oidcAuth.isAuthenticated()) {
+      return 'Not logged in';
+    }
     const roles = this.oidcAuth.getUserRoles();
     return roles.length > 0 ? roles.join(', ') : 'No roles';
   }
