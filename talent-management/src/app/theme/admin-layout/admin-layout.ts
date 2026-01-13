@@ -8,7 +8,6 @@ import { NgProgressRouter } from 'ngx-progressbar/router';
 import { Subscription, filter } from 'rxjs';
 
 import { AppSettings, SettingsService } from '@core';
-import { Customizer } from '../customizer/customizer';
 import { Header } from '../header/header';
 import { SidebarNotice } from '../sidebar-notice/sidebar-notice';
 import { Sidebar } from '../sidebar/sidebar';
@@ -33,7 +32,6 @@ const MONITOR_MEDIAQUERY = 'screen and (min-width: 960px)';
     Topmenu,
     Sidebar,
     SidebarNotice,
-    Customizer,
   ],
   host: {
     '[class.matero-content-width-fix]': 'contentWidthFix',
