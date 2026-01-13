@@ -13,7 +13,7 @@ export const environment = {
   // Duende IdentityServer Configuration
   identityServerUrl: 'https://localhost:44310',
   clientId: 'TalentManagement',
-  scope: 'openid profile email api',
+  scope: 'openid profile email app.api.talentmanagement.read',
 
   // Feature Flags
   allowAnonymousAccess: true,
