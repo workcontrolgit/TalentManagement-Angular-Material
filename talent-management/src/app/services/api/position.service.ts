@@ -5,6 +5,8 @@ import {
   CreatePositionCommand,
   UpdatePositionCommand,
   InsertMockPositionCommand,
+  PagedResponse,
+  QueryParams,
 } from '../../models';
 import { BaseApiService } from './base-api.service';
 
@@ -29,6 +31,14 @@ export class PositionService extends BaseApiService<Position> {
    */
   updatePosition(command: UpdatePositionCommand): Observable<void> {
     return this.update(command.id, command);
+  }
+
+  /**
+   * Get paged list of positions with search filters
+   */
+  getAllPaged(params?: QueryParams): Observable<PagedResponse<Position>> {
+    const httpParams = this.buildHttpParams(params);
+    return this.http.get<PagedResponse<Position>>(`${this.apiUrl}/${this.endpoint}`, { params: httpParams });
   }
 
   /**
