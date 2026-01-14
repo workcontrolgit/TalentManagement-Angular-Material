@@ -8,7 +8,7 @@
       mat-raised-button
       color="primary"
       (click)="createEmployee()"
-      *hasRole="'HRAdmin'">
+      *appHasRole="'HRAdmin'">
       <mat-icon>add</mat-icon>
       Add Employee
     </button>
@@ -72,7 +72,7 @@
               mat-icon-button
               color="accent"
               (click)="editEmployee(employee)"
-              *hasRole="'HRAdmin'"
+              *appHasRole="'HRAdmin'"
               matTooltip="Edit Employee">
               <mat-icon>edit</mat-icon>
             </button>
@@ -80,7 +80,7 @@
               mat-icon-button
               color="warn"
               (click)="deleteEmployee(employee)"
-              *hasRole="'HRAdmin'"
+              *appHasRole="'HRAdmin'"
               matTooltip="Delete Employee">
               <mat-icon>delete</mat-icon>
             </button>
