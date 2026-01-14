@@ -24,13 +24,16 @@ export interface PaginationParams {
  * Paginated response
  */
 export interface PagedResponse<T> {
-  items: T[];
+  value: T[];
   pageNumber: number;
   pageSize: number;
-  totalPages: number;
-  totalCount: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
+  recordsFiltered: number;
+  recordsTotal: number;
+  isSuccess: boolean;
+  isFailure: boolean;
+  message?: string;
+  errors: string[];
+  executionTimeMs: number;
 }
 
 /**
