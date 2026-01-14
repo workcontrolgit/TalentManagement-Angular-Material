@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { PaginationParams, PagedResponse, QueryParams } from '../../models';
 
@@ -23,7 +24,10 @@ export abstract class BaseApiService<T> {
    */
   getAll(params?: QueryParams): Observable<T[]> {
     const httpParams = this.buildHttpParams(params);
-    return this.http.get<T[]>(`${this.apiUrl}/${this.endpoint}`, { params: httpParams });
+    return this.http.get<PagedResponse<T>>(`${this.apiUrl}/${this.endpoint}`, { params: httpParams })
+      .pipe(
+        map(response => response.value)
+      );
   }
 
   /**
