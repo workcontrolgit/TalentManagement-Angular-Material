@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-user-panel',
   template: `
-    <div class="matero-user-panel" routerLink="/profile/overview">
+    <div class="matero-user-panel" [class.authenticated]="oidcAuth.isAuthenticated()">
       <mat-icon class="matero-user-panel-avatar">account_circle</mat-icon>
       <div class="matero-user-panel-info">
         <h4>{{ userName }}</h4>
@@ -21,10 +21,10 @@ import { CommonModule } from '@angular/common';
   `,
   styleUrl: './user-panel.scss',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, TranslateModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, TranslateModule],
 })
 export class UserPanel implements OnInit, OnDestroy {
-  private readonly oidcAuth = inject(OidcAuthService);
+  readonly oidcAuth = inject(OidcAuthService);
   private authSubscription?: Subscription;
 
   userName = 'Guest';
@@ -35,7 +35,8 @@ export class UserPanel implements OnInit, OnDestroy {
     this.updateUserInfo();
 
     // Subscribe to authentication state changes
-    this.authSubscription = this.oidcAuth.isAuthenticated$.subscribe(() => {
+    this.authSubscription = this.oidcAuth.isAuthenticated$.subscribe((isAuth) => {
+      console.log('UserPanel: Auth state changed:', isAuth);
       this.updateUserInfo();
     });
   }
@@ -45,14 +46,21 @@ export class UserPanel implements OnInit, OnDestroy {
   }
 
   private updateUserInfo(): void {
-    if (!this.oidcAuth.isAuthenticated()) {
+    const isAuth = this.oidcAuth.isAuthenticated();
+    console.log('UserPanel: Updating user info, isAuthenticated:', isAuth);
+
+    if (!isAuth) {
       this.userName = 'Guest';
       this.userEmail = 'Anonymous';
       return;
     }
 
     const userInfo = this.oidcAuth.getUserInfo();
+    console.log('UserPanel: User info from service:', userInfo);
+
     this.userName = userInfo?.name || userInfo?.preferred_username || 'User';
     this.userEmail = userInfo?.email || '';
+
+    console.log('UserPanel: Set userName to:', this.userName, 'email to:', this.userEmail);
   }
 }
