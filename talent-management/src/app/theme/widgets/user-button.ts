@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 import { SettingsService } from '@core';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -18,9 +20,9 @@ import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
 
     <mat-menu #menu="matMenu">
       <div class="user-info">
-        <div class="user-name">{{ getUserName() }}</div>
-        <div class="user-email">{{ getUserEmail() }}</div>
-        <div class="user-roles">{{ getUserRoles() }}</div>
+        <div class="user-name">{{ userName }}</div>
+        <div class="user-email">{{ userEmail }}</div>
+        <div class="user-roles">{{ userRoles }}</div>
       </div>
       <mat-divider></mat-divider>
       @if (isAuthenticated()) {
@@ -82,35 +84,46 @@ import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
       }
     }
   `,
-  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule, TranslateModule],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule, TranslateModule],
 })
-export class UserButton {
+export class UserButton implements OnInit, OnDestroy {
   private readonly oidcAuth = inject(OidcAuthService);
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
+  private authSubscription?: Subscription;
 
-  getUserName(): string {
-    if (!this.oidcAuth.isAuthenticated()) {
-      return 'Guest';
-    }
-    const userInfo = this.oidcAuth.getUserInfo();
-    return userInfo?.name || userInfo?.preferred_username || 'User';
+  userName = 'Guest';
+  userEmail = '';
+  userRoles = 'Anonymous User';
+
+  ngOnInit(): void {
+    // Set initial values
+    this.updateUserInfo();
+
+    // Subscribe to authentication state changes
+    this.authSubscription = this.oidcAuth.isAuthenticated$.subscribe(() => {
+      this.updateUserInfo();
+    });
   }
 
-  getUserEmail(): string {
-    if (!this.oidcAuth.isAuthenticated()) {
-      return '';
-    }
-    const userInfo = this.oidcAuth.getUserInfo();
-    return userInfo?.email || '';
+  ngOnDestroy(): void {
+    this.authSubscription?.unsubscribe();
   }
 
-  getUserRoles(): string {
+  private updateUserInfo(): void {
     if (!this.oidcAuth.isAuthenticated()) {
-      return 'Anonymous User';
+      this.userName = 'Guest';
+      this.userEmail = '';
+      this.userRoles = 'Anonymous User';
+      return;
     }
+
+    const userInfo = this.oidcAuth.getUserInfo();
+    this.userName = userInfo?.name || userInfo?.preferred_username || 'User';
+    this.userEmail = userInfo?.email || '';
+
     const roles = this.oidcAuth.getUserRoles();
-    return roles.length > 0 ? roles.join(', ') : 'No roles';
+    this.userRoles = roles.length > 0 ? roles.join(', ') : 'No roles';
   }
 
   isAuthenticated(): boolean {
