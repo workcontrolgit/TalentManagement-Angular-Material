@@ -118,7 +118,8 @@ export class UserButton {
   }
 
   login() {
-    this.oidcAuth.login();
+    // Navigate to login page instead of directly calling OIDC
+    this.router.navigateByUrl('/login');
   }
 
   logout() {
