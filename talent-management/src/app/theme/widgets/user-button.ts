@@ -23,22 +23,31 @@ import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
         <div class="user-roles">{{ getUserRoles() }}</div>
       </div>
       <mat-divider></mat-divider>
-      <button routerLink="/profile/overview" mat-menu-item>
-        <mat-icon>account_circle</mat-icon>
-        <span>{{ 'profile' | translate }}</span>
-      </button>
-      <button routerLink="/profile/settings" mat-menu-item>
-        <mat-icon>edit</mat-icon>
-        <span>{{ 'edit_profile' | translate }}</span>
-      </button>
+      @if (isAuthenticated()) {
+        <button routerLink="/profile/overview" mat-menu-item>
+          <mat-icon>account_circle</mat-icon>
+          <span>{{ 'profile' | translate }}</span>
+        </button>
+        <button routerLink="/profile/settings" mat-menu-item>
+          <mat-icon>edit</mat-icon>
+          <span>{{ 'edit_profile' | translate }}</span>
+        </button>
+      }
       <button mat-menu-item (click)="restore()">
         <mat-icon>restore</mat-icon>
         <span>{{ 'restore_defaults' | translate }}</span>
       </button>
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>exit_to_app</mat-icon>
-        <span>{{ 'logout' | translate }}</span>
-      </button>
+      @if (isAuthenticated()) {
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>{{ 'logout' | translate }}</span>
+        </button>
+      } @else {
+        <button mat-menu-item (click)="login()">
+          <mat-icon>login</mat-icon>
+          <span>{{ 'login' | translate }}</span>
+        </button>
+      }
     </mat-menu>
   `,
   styles: `
@@ -98,15 +107,23 @@ export class UserButton {
 
   getUserRoles(): string {
     if (!this.oidcAuth.isAuthenticated()) {
-      return 'Not logged in';
+      return 'Anonymous User';
     }
     const roles = this.oidcAuth.getUserRoles();
     return roles.length > 0 ? roles.join(', ') : 'No roles';
   }
 
+  isAuthenticated(): boolean {
+    return this.oidcAuth.isAuthenticated();
+  }
+
+  login() {
+    this.oidcAuth.login();
+  }
+
   logout() {
     this.oidcAuth.logout();
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/dashboard');
   }
 
   restore() {

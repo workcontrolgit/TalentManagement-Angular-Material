@@ -45,26 +45,32 @@ export class StartupService {
   }
 
   private setPermissions() {
-    // Get roles from OIDC token
+    // Get roles from OIDC token (if authenticated)
     const roles = this.oidcAuth.getUserRoles();
 
     // Define permissions based on roles
     const permissions = ['canAdd', 'canDelete', 'canEdit', 'canRead'];
-    this.permissonsService.loadPermissions(permissions);
 
     // Flush existing roles and add new ones
     this.rolesService.flushRoles();
 
-    // Add roles with all permissions
-    // In a real app, you would map specific permissions to specific roles
-    if (roles.includes('HRAdmin')) {
-      this.rolesService.addRoles({ HRAdmin: permissions });
-    }
-    if (roles.includes('Manager')) {
-      this.rolesService.addRoles({ Manager: permissions });
-    }
-    if (roles.includes('Employee')) {
-      this.rolesService.addRoles({ Employee: ['canRead'] });
+    // If user is authenticated, set their specific permissions
+    if (roles.length > 0) {
+      this.permissonsService.loadPermissions(permissions);
+
+      if (roles.includes('HRAdmin')) {
+        this.rolesService.addRoles({ HRAdmin: permissions });
+      }
+      if (roles.includes('Manager')) {
+        this.rolesService.addRoles({ Manager: permissions });
+      }
+      if (roles.includes('Employee')) {
+        this.rolesService.addRoles({ Employee: ['canRead'] });
+      }
+    } else {
+      // Anonymous user - set read-only permissions
+      this.permissonsService.loadPermissions(['canRead']);
+      this.rolesService.addRoles({ Guest: ['canRead'] });
     }
   }
 }

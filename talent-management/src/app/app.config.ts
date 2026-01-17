@@ -42,6 +42,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     { provide: BASE_URL, useValue: environment.baseUrl },
     provideOAuthClient(),
+    // Initialize OIDC auth to process callbacks, but don't require authentication
+    // If allowAnonymousAccess is true, failed auth won't block the app
     provideAppInitializer(() => inject(OidcAuthService).initAuth()),
     provideAppInitializer(() => inject(TranslateLangService).load()),
     provideAppInitializer(() => inject(StartupService).load()),
