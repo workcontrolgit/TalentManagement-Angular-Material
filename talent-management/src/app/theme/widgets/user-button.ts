@@ -119,11 +119,27 @@ export class UserButton implements OnInit, OnDestroy {
     }
 
     const userInfo = this.oidcAuth.getUserInfo();
-    this.userName = userInfo?.name || userInfo?.preferred_username || 'User';
-    this.userEmail = userInfo?.email || '';
+    console.log('UserButton: User info:', userInfo);
+    console.log('UserButton: Available claims:', userInfo ? Object.keys(userInfo) : 'null');
+
+    // Try different claim names that might be present
+    this.userName =
+      userInfo?.name ||
+      userInfo?.preferred_username ||
+      userInfo?.given_name ||
+      userInfo?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+      userInfo?.sub ||
+      'User';
+
+    this.userEmail =
+      userInfo?.email ||
+      userInfo?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ||
+      '';
 
     const roles = this.oidcAuth.getUserRoles();
     this.userRoles = roles.length > 0 ? roles.join(', ') : 'No roles';
+
+    console.log('UserButton: Set userName to:', this.userName, 'email to:', this.userEmail, 'roles:', this.userRoles);
   }
 
   isAuthenticated(): boolean {

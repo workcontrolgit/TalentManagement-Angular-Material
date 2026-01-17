@@ -57,9 +57,21 @@ export class UserPanel implements OnInit, OnDestroy {
 
     const userInfo = this.oidcAuth.getUserInfo();
     console.log('UserPanel: User info from service:', userInfo);
+    console.log('UserPanel: Available claims:', userInfo ? Object.keys(userInfo) : 'null');
 
-    this.userName = userInfo?.name || userInfo?.preferred_username || 'User';
-    this.userEmail = userInfo?.email || '';
+    // Try different claim names that might be present
+    this.userName =
+      userInfo?.name ||
+      userInfo?.preferred_username ||
+      userInfo?.given_name ||
+      userInfo?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+      userInfo?.sub ||
+      'User';
+
+    this.userEmail =
+      userInfo?.email ||
+      userInfo?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ||
+      '';
 
     console.log('UserPanel: Set userName to:', this.userName, 'email to:', this.userEmail);
   }
