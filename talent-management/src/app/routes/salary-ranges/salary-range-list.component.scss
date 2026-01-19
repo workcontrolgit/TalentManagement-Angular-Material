@@ -71,6 +71,12 @@ mat-card-content {
     text-align: right;
   }
 
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
   button {
     margin-left: 4px;
   }

@@ -114,7 +114,7 @@ export class SalaryRangeFormComponent implements OnInit {
       this.salaryRangeService.updateSalaryRange(command).subscribe({
         next: () => {
           this.showMessage('Salary range updated successfully');
-          this.router.navigate(['/salary-ranges']);
+          this.router.navigate(['/salary-ranges', this.salaryRangeId]);
         },
         error: error => {
           console.error('Error updating salary range:', error);
@@ -130,9 +130,9 @@ export class SalaryRangeFormComponent implements OnInit {
       };
 
       this.salaryRangeService.createSalaryRange(command).subscribe({
-        next: () => {
+        next: (salaryRange) => {
           this.showMessage('Salary range created successfully');
-          this.router.navigate(['/salary-ranges']);
+          this.router.navigate(['/salary-ranges', salaryRange.id]);
         },
         error: error => {
           console.error('Error creating salary range:', error);

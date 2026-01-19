@@ -148,6 +148,10 @@ export class PositionListComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/positions/create']);
   }
 
+  viewPosition(position: Position): void {
+    this.router.navigate(['/positions', position.id]);
+  }
+
   editPosition(position: Position): void {
     this.router.navigate(['/positions/edit', position.id]);
   }

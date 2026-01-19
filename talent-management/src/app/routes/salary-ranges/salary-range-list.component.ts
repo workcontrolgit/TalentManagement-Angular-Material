@@ -77,6 +77,10 @@ export class SalaryRangeListComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/salary-ranges/create']);
   }
 
+  viewSalaryRange(salaryRange: SalaryRange): void {
+    this.router.navigate(['/salary-ranges', salaryRange.id]);
+  }
+
   editSalaryRange(salaryRange: SalaryRange): void {
     this.router.navigate(['/salary-ranges/edit', salaryRange.id]);
   }

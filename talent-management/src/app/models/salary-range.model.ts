@@ -6,13 +6,15 @@ export interface SalaryRange {
   name: string;
   minSalary: number;
   maxSalary: number;
+  createdAt?: string;
+  lastModifiedAt?: string;
 }
 
 /**
  * Create Salary Range Command
  */
 export interface CreateSalaryRangeCommand {
-  name?: string;
+  name: string;
   minSalary: number;
   maxSalary: number;
 }
@@ -22,7 +24,7 @@ export interface CreateSalaryRangeCommand {
  */
 export interface UpdateSalaryRangeCommand {
   id: string;
-  name?: string;
+  name: string;
   minSalary: number;
   maxSalary: number;
 }
