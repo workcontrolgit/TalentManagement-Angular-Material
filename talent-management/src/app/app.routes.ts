@@ -9,7 +9,7 @@ import { Error500 } from './routes/sessions/error-500';
 import { Login } from './routes/sessions/login/login';
 import { Register } from './routes/sessions/register/register';
 import { CallbackComponent } from './routes/sessions/callback/callback';
-import { hrAdminGuard } from './core/authentication/role.guard';
+import { hrAdminGuard, managerGuard } from './core/authentication/role.guard';
 import { EmployeeListComponent } from './routes/employees/employee-list.component';
 import { EmployeeDetailComponent } from './routes/employees/employee-detail.component';
 import { EmployeeFormComponent } from './routes/employees/employee-form.component';
@@ -30,8 +30,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard },
       { path: 'employees', component: EmployeeListComponent },
-      { path: 'employees/create', component: EmployeeFormComponent, canActivate: [hrAdminGuard] },
-      { path: 'employees/edit/:id', component: EmployeeFormComponent, canActivate: [hrAdminGuard] },
+      { path: 'employees/create', component: EmployeeFormComponent, canActivate: [managerGuard] },
+      { path: 'employees/edit/:id', component: EmployeeFormComponent, canActivate: [managerGuard] },
       { path: 'employees/:id', component: EmployeeDetailComponent },
       { path: 'departments', component: DepartmentListComponent },
       { path: 'departments/create', component: DepartmentFormComponent, canActivate: [hrAdminGuard] },

@@ -17,11 +17,10 @@ import {
   CreateEmployeeCommand,
   UpdateEmployeeCommand,
   Gender,
-  Department,
   Position,
-  SalaryRange,
+  Department,
 } from '../../models';
-import { EmployeeService, DepartmentService, PositionService, SalaryRangeService } from '../../services/api';
+import { EmployeeService, PositionService, DepartmentService } from '../../services/api';
 
 @Component({
   selector: 'app-employee-form',
@@ -49,18 +48,16 @@ export class EmployeeFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
   private employeeService = inject(EmployeeService);
-  private departmentService = inject(DepartmentService);
   private positionService = inject(PositionService);
-  private salaryRangeService = inject(SalaryRangeService);
+  private departmentService = inject(DepartmentService);
 
   employeeForm!: FormGroup;
   loading = false;
   isEditMode = false;
   employeeId?: string;
 
-  departments: Department[] = [];
   positions: Position[] = [];
-  salaryRanges: SalaryRange[] = [];
+  departments: Department[] = [];
 
   genderOptions = [
     { value: Gender.Male, label: 'Male' },
@@ -80,17 +77,13 @@ export class EmployeeFormComponent implements OnInit {
       firstName: ['', [Validators.required, Validators.maxLength(100)]],
       middleName: ['', Validators.maxLength(100)],
       lastName: ['', [Validators.required, Validators.maxLength(100)]],
-      suffix: ['', Validators.maxLength(10)],
-      dateOfBirth: [null, Validators.required],
+      birthday: [null, Validators.required],
       gender: [Gender.Male, Validators.required],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
-      phoneNumber: ['', [Validators.required, Validators.maxLength(20)]],
-      address: ['', Validators.maxLength(500)],
-      hireDate: [null, Validators.required],
+      phone: ['', [Validators.required, Validators.maxLength(20)]],
       salary: [0, [Validators.required, Validators.min(0)]],
-      departmentId: ['', Validators.required],
       positionId: ['', Validators.required],
-      salaryRangeId: ['', Validators.required],
+      departmentId: ['', Validators.required],
     });
   }
 
@@ -114,16 +107,6 @@ export class EmployeeFormComponent implements OnInit {
         this.showMessage('Error loading positions');
       },
     });
-
-    this.salaryRangeService.getAll().subscribe({
-      next: salaryRanges => {
-        this.salaryRanges = salaryRanges;
-      },
-      error: error => {
-        console.error('Error loading salary ranges:', error);
-        this.showMessage('Error loading salary ranges');
-      },
-    });
   }
 
   checkEditMode(): void {
@@ -145,17 +128,13 @@ export class EmployeeFormComponent implements OnInit {
           firstName: employee.firstName,
           middleName: employee.middleName,
           lastName: employee.lastName,
-          suffix: employee.suffix,
-          dateOfBirth: employee.dateOfBirth,
+          birthday: employee.birthday || employee.dateOfBirth,
           gender: employee.gender,
           email: employee.email,
-          phoneNumber: employee.phoneNumber,
-          address: employee.address,
-          hireDate: employee.hireDate,
+          phone: employee.phone || employee.phoneNumber,
           salary: employee.salary,
-          departmentId: employee.departmentId,
           positionId: employee.positionId,
-          salaryRangeId: employee.salaryRangeId,
+          departmentId: employee.departmentId,
         });
         this.loading = false;
       },

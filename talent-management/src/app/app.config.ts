@@ -11,7 +11,6 @@ import { provideOAuthClient } from 'angular-oauth2-oidc';
 
 import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
 import { MAT_CARD_CONFIG } from '@angular/material/card';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { provideDateFnsDatetimeAdapter } from '@ng-matero/extensions-date-fns-adapter';
 import { FORMLY_CONFIG, provideFormlyCore } from '@ngx-formly/core';
@@ -77,10 +76,6 @@ export const appConfig: ApplicationConfig = {
       provide: MatPaginatorIntl,
       deps: [PaginatorI18nService],
       useFactory: (paginatorI18nSrv: PaginatorI18nService) => paginatorI18nSrv.getPaginatorIntl(),
-    },
-    {
-      provide: MAT_DATE_LOCALE,
-      useFactory: () => inject(SettingsService).getLocale(),
     },
     {
       provide: MAT_CARD_CONFIG,

@@ -2,8 +2,8 @@
   "menu": {
     "dashboard": "Dashboard",
     "employees": "Employees",
-    "employeeList": "Employee List",
-    "addEmployee": "Add Employee",
+    "employees.employeeList": "List",
+    "employees.addEmployee": "Create",
     "departments": "Departments",
     "positions": "Positions",
     "salaryRanges": "Salary Ranges",

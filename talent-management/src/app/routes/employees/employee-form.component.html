@@ -53,22 +53,38 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Suffix</mat-label>
-            <input matInput formControlName="suffix" placeholder="Jr., Sr., III" />
+            <mat-label>Date of Birth</mat-label>
+            <input matInput [matDatepicker]="dobPicker" formControlName="birthday" />
+            <mat-datepicker-toggle matIconSuffix [for]="dobPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dobPicker></mat-datepicker>
+            <mat-error *ngIf="employeeForm.get('birthday')?.hasError('required')">
+              Date of birth is required
+            </mat-error>
           </mat-form-field>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Date of Birth</mat-label>
-            <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
-            <mat-datepicker-toggle matIconSuffix [for]="dobPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dobPicker></mat-datepicker>
-            <mat-error *ngIf="employeeForm.get('dateOfBirth')?.hasError('required')">
-              Date of birth is required
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <mat-error *ngIf="employeeForm.get('email')?.hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="employeeForm.get('email')?.hasError('email')">
+              Please enter a valid email
             </mat-error>
           </mat-form-field>
 
+          <mat-form-field appearance="outline">
+            <mat-label>Phone Number</mat-label>
+            <input matInput formControlName="phone" />
+            <mat-error *ngIf="employeeForm.get('phone')?.hasError('required')">
+              Phone number is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Gender</mat-label>
             <mat-select formControlName="gender">
@@ -84,62 +100,7 @@
       </div>
 
       <div class="form-section">
-        <h3>Contact Information</h3>
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
-            <input matInput type="email" formControlName="email" />
-            <mat-error *ngIf="employeeForm.get('email')?.hasError('required')">
-              Email is required
-            </mat-error>
-            <mat-error *ngIf="employeeForm.get('email')?.hasError('email')">
-              Please enter a valid email
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Phone Number</mat-label>
-            <input matInput formControlName="phoneNumber" />
-            <mat-error *ngIf="employeeForm.get('phoneNumber')?.hasError('required')">
-              Phone number is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Address</mat-label>
-            <textarea matInput formControlName="address" rows="3"></textarea>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="form-section">
         <h3>Employment Information</h3>
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Hire Date</mat-label>
-            <input matInput [matDatepicker]="hirePicker" formControlName="hireDate" />
-            <mat-datepicker-toggle matIconSuffix [for]="hirePicker"></mat-datepicker-toggle>
-            <mat-datepicker #hirePicker></mat-datepicker>
-            <mat-error *ngIf="employeeForm.get('hireDate')?.hasError('required')">
-              Hire date is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Salary</mat-label>
-            <input matInput type="number" formControlName="salary" />
-            <span matTextPrefix>$&nbsp;</span>
-            <mat-error *ngIf="employeeForm.get('salary')?.hasError('required')">
-              Salary is required
-            </mat-error>
-            <mat-error *ngIf="employeeForm.get('salary')?.hasError('min')">
-              Salary must be greater than 0
-            </mat-error>
-          </mat-form-field>
-        </div>
-
         <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Department</mat-label>
@@ -168,14 +129,14 @@
 
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Salary Range</mat-label>
-            <mat-select formControlName="salaryRangeId">
-              <mat-option *ngFor="let range of salaryRanges" [value]="range.id">
-                {{ range.name }} (${{ range.minSalary | number }} - ${{ range.maxSalary | number }})
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="employeeForm.get('salaryRangeId')?.hasError('required')">
-              Salary range is required
+            <mat-label>Salary</mat-label>
+            <input matInput type="number" formControlName="salary" />
+            <span matTextPrefix>$&nbsp;</span>
+            <mat-error *ngIf="employeeForm.get('salary')?.hasError('required')">
+              Salary is required
+            </mat-error>
+            <mat-error *ngIf="employeeForm.get('salary')?.hasError('min')">
+              Salary must be greater than 0
             </mat-error>
           </mat-form-field>
         </div>

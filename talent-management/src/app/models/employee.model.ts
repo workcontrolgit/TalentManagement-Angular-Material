@@ -18,12 +18,14 @@ export interface Employee {
   phone?: string;
   employeeNumber: string;
   positionId: string;
+  positionTitle?: string;
   departmentId: string;
-  salaryRangeId: string;
+  departmentName?: string;
+  salaryRangeId?: string;
   salary: number;
-  dateOfBirth: string;
-  birthday: string;
-  hireDate: string;
+  dateOfBirth?: string;
+  birthday?: string;
+  hireDate?: string;
   address?: string;
   gender: Gender;
   department?: Department;
@@ -42,17 +44,13 @@ export interface CreateEmployeeCommand {
   firstName: string;
   middleName?: string;
   lastName: string;
-  suffix?: string;
-  dateOfBirth: string;
+  birthday: string;
   gender: Gender;
   email: string;
-  phoneNumber: string;
-  address?: string;
-  hireDate: string;
+  phone: string;
   salary: number;
-  departmentId: string;
   positionId: string;
-  salaryRangeId: string;
+  departmentId: string;
 }
 
 /**
@@ -65,15 +63,11 @@ export interface UpdateEmployeeCommand {
   firstName: string;
   middleName?: string;
   lastName: string;
-  suffix?: string;
-  dateOfBirth: string;
+  birthday: string;
   gender: Gender;
   email: string;
-  phoneNumber: string;
-  address?: string;
-  hireDate: string;
+  phone: string;
   salary: number;
-  departmentId: string;
   positionId: string;
-  salaryRangeId: string;
+  departmentId: string;
 }
