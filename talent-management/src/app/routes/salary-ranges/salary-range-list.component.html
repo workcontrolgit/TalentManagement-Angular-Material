@@ -35,12 +35,31 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="mat-column-actions">Actions</th>
           <td mat-cell *matCellDef="let salaryRange" class="mat-column-actions">
-            <button mat-icon-button color="primary" (click)="editSalaryRange(salaryRange)" matTooltip="Edit" *appHasRole="['HRAdmin', 'Manager']">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="deleteSalaryRange(salaryRange)" matTooltip="Delete" *appHasRole="['HRAdmin']">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <div class="action-buttons">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="viewSalaryRange(salaryRange)"
+                matTooltip="View Details">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="accent"
+                (click)="editSalaryRange(salaryRange)"
+                *appHasRole="['HRAdmin', 'Manager']"
+                matTooltip="Edit Salary Range">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteSalaryRange(salaryRange)"
+                *appHasRole="['HRAdmin']"
+                matTooltip="Delete Salary Range">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
 

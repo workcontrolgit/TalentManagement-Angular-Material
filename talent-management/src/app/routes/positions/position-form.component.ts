@@ -141,7 +141,7 @@ export class PositionFormComponent implements OnInit {
       this.positionService.updatePosition(command).subscribe({
         next: () => {
           this.showMessage('Position updated successfully');
-          this.router.navigate(['/positions']);
+          this.router.navigate(['/positions', this.positionId]);
         },
         error: error => {
           console.error('Error updating position:', error);
@@ -153,9 +153,9 @@ export class PositionFormComponent implements OnInit {
       const command: CreatePositionCommand = this.positionForm.value;
 
       this.positionService.createPosition(command).subscribe({
-        next: () => {
+        next: (position) => {
           this.showMessage('Position created successfully');
-          this.router.navigate(['/positions']);
+          this.router.navigate(['/positions', position.id]);
         },
         error: error => {
           console.error('Error creating position:', error);

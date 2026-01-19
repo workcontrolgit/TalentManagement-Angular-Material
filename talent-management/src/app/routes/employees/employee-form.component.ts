@@ -163,7 +163,7 @@ export class EmployeeFormComponent implements OnInit {
       this.employeeService.updateEmployee(command).subscribe({
         next: () => {
           this.showMessage('Employee updated successfully');
-          this.router.navigate(['/employees']);
+          this.router.navigate(['/employees', this.employeeId]);
         },
         error: error => {
           console.error('Error updating employee:', error);
@@ -175,9 +175,9 @@ export class EmployeeFormComponent implements OnInit {
       const command: CreateEmployeeCommand = this.employeeForm.value;
 
       this.employeeService.createEmployee(command).subscribe({
-        next: () => {
+        next: (employee) => {
           this.showMessage('Employee created successfully');
-          this.router.navigate(['/employees']);
+          this.router.navigate(['/employees', employee.id]);
         },
         error: error => {
           console.error('Error creating employee:', error);

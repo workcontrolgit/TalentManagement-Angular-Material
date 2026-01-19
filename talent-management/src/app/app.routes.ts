@@ -14,10 +14,13 @@ import { EmployeeListComponent } from './routes/employees/employee-list.componen
 import { EmployeeDetailComponent } from './routes/employees/employee-detail.component';
 import { EmployeeFormComponent } from './routes/employees/employee-form.component';
 import { DepartmentListComponent } from './routes/departments/department-list.component';
+import { DepartmentDetailComponent } from './routes/departments/department-detail.component';
 import { DepartmentFormComponent } from './routes/departments/department-form.component';
 import { PositionListComponent } from './routes/positions/position-list.component';
+import { PositionDetailComponent } from './routes/positions/position-detail.component';
 import { PositionFormComponent } from './routes/positions/position-form.component';
 import { SalaryRangeListComponent } from './routes/salary-ranges/salary-range-list.component';
+import { SalaryRangeDetailComponent } from './routes/salary-ranges/salary-range-detail.component';
 import { SalaryRangeFormComponent } from './routes/salary-ranges/salary-range-form.component';
 
 export const routes: Routes = [
@@ -34,14 +37,17 @@ export const routes: Routes = [
       { path: 'employees/edit/:id', component: EmployeeFormComponent, canActivate: [managerGuard] },
       { path: 'employees/:id', component: EmployeeDetailComponent },
       { path: 'departments', component: DepartmentListComponent },
-      { path: 'departments/create', component: DepartmentFormComponent, canActivate: [hrAdminGuard] },
-      { path: 'departments/edit/:id', component: DepartmentFormComponent, canActivate: [hrAdminGuard] },
+      { path: 'departments/create', component: DepartmentFormComponent, canActivate: [managerGuard] },
+      { path: 'departments/edit/:id', component: DepartmentFormComponent, canActivate: [managerGuard] },
+      { path: 'departments/:id', component: DepartmentDetailComponent },
       { path: 'positions', component: PositionListComponent },
       { path: 'positions/create', component: PositionFormComponent, canActivate: [hrAdminGuard] },
       { path: 'positions/edit/:id', component: PositionFormComponent, canActivate: [hrAdminGuard] },
+      { path: 'positions/:id', component: PositionDetailComponent },
       { path: 'salary-ranges', component: SalaryRangeListComponent },
       { path: 'salary-ranges/create', component: SalaryRangeFormComponent, canActivate: [hrAdminGuard] },
       { path: 'salary-ranges/edit/:id', component: SalaryRangeFormComponent, canActivate: [hrAdminGuard] },
+      { path: 'salary-ranges/:id', component: SalaryRangeDetailComponent },
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },

@@ -1,3 +1,6 @@
+import { Department } from './department.model';
+import { SalaryRange } from './salary-range.model';
+
 /**
  * Position entity
  */
@@ -8,14 +11,18 @@ export interface Position {
   positionDescription?: string;
   departmentId: string;
   salaryRangeId: string;
+  department?: Department;
+  salaryRange?: SalaryRange;
+  createdAt?: string;
+  lastModifiedAt?: string;
 }
 
 /**
  * Create Position Command
  */
 export interface CreatePositionCommand {
-  positionTitle?: string;
-  positionNumber?: string;
+  positionTitle: string;
+  positionNumber: string;
   positionDescription?: string;
   departmentId: string;
   salaryRangeId: string;
@@ -26,8 +33,8 @@ export interface CreatePositionCommand {
  */
 export interface UpdatePositionCommand {
   id: string;
-  positionTitle?: string;
-  positionNumber?: string;
+  positionTitle: string;
+  positionNumber: string;
   positionDescription?: string;
   departmentId: string;
   salaryRangeId: string;

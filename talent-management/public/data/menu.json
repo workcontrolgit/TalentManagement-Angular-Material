@@ -30,41 +30,63 @@
     {
       "route": "departments",
       "name": "departments",
-      "type": "link",
-      "icon": "business"
+      "type": "sub",
+      "icon": "business",
+      "children": [
+        {
+          "route": "",
+          "name": "departmentList",
+          "type": "link"
+        },
+        {
+          "route": "create",
+          "name": "addDepartment",
+          "type": "link",
+          "permissions": {
+            "only": ["canAdd"]
+          }
+        }
+      ]
     },
     {
       "route": "positions",
       "name": "positions",
-      "type": "link",
-      "icon": "work"
+      "type": "sub",
+      "icon": "work",
+      "children": [
+        {
+          "route": "",
+          "name": "positionList",
+          "type": "link"
+        },
+        {
+          "route": "create",
+          "name": "addPosition",
+          "type": "link",
+          "permissions": {
+            "only": ["canAdd"]
+          }
+        }
+      ]
     },
     {
       "route": "salary-ranges",
       "name": "salaryRanges",
-      "type": "link",
-      "icon": "attach_money"
-    },
-    {
-      "route": "/",
-      "name": "sessions",
       "type": "sub",
-      "icon": "question_answer",
+      "icon": "attach_money",
       "children": [
         {
-          "route": "403",
-          "name": "403",
+          "route": "",
+          "name": "salaryRangeList",
           "type": "link"
         },
         {
-          "route": "404",
-          "name": "404",
-          "type": "link"
-        },
-        {
-          "route": "500",
-          "name": "500",
-          "type": "link"
+          "route": "create",
+          "name": "addSalaryRange",
+          "type": "link",
+          "permissions": {
+            "only": ["canAdd"]
+          }
         }
       ]
     }

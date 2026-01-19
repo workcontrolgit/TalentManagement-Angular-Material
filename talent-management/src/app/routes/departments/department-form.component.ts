@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PageHeader } from '@shared/components/page-header/page-header';
@@ -20,8 +21,9 @@ import { DepartmentService } from '../../services/api';
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
-    MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
     PageHeader,
@@ -30,11 +32,11 @@ import { DepartmentService } from '../../services/api';
   styleUrl: './department-form.component.scss',
 })
 export class DepartmentFormComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private snackBar = inject(MatSnackBar);
   private departmentService = inject(DepartmentService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
 
   departmentForm!: FormGroup;
   loading = false;
@@ -43,7 +45,13 @@ export class DepartmentFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.checkEditMode();
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = true;
+      this.departmentId = id;
+      this.loadDepartment(id);
+    }
   }
 
   initForm(): void {
@@ -52,17 +60,9 @@ export class DepartmentFormComponent implements OnInit {
     });
   }
 
-  checkEditMode(): void {
-    this.departmentId = this.route.snapshot.paramMap.get('id') || undefined;
-    this.isEditMode = !!this.departmentId;
-
-    if (this.isEditMode && this.departmentId) {
-      this.loadDepartment(this.departmentId);
-    }
-  }
-
   loadDepartment(id: string): void {
     this.loading = true;
+
     this.departmentService.getById(id).subscribe({
       next: (department: Department) => {
         this.departmentForm.patchValue({
@@ -80,7 +80,6 @@ export class DepartmentFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.departmentForm.invalid) {
-      this.departmentForm.markAllAsTouched();
       return;
     }
 
@@ -89,13 +88,13 @@ export class DepartmentFormComponent implements OnInit {
     if (this.isEditMode && this.departmentId) {
       const command: UpdateDepartmentCommand = {
         id: this.departmentId,
-        ...this.departmentForm.value,
+        name: this.departmentForm.value.name,
       };
 
       this.departmentService.updateDepartment(command).subscribe({
         next: () => {
           this.showMessage('Department updated successfully');
-          this.router.navigate(['/departments']);
+          this.router.navigate(['/departments', this.departmentId]);
         },
         error: error => {
           console.error('Error updating department:', error);
@@ -104,12 +103,14 @@ export class DepartmentFormComponent implements OnInit {
         },
       });
     } else {
-      const command: CreateDepartmentCommand = this.departmentForm.value;
+      const command: CreateDepartmentCommand = {
+        name: this.departmentForm.value.name,
+      };
 
       this.departmentService.createDepartment(command).subscribe({
-        next: () => {
+        next: (department) => {
           this.showMessage('Department created successfully');
-          this.router.navigate(['/departments']);
+          this.router.navigate(['/departments', department.id]);
         },
         error: error => {
           console.error('Error creating department:', error);
@@ -121,7 +122,11 @@ export class DepartmentFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/departments']);
+    if (this.isEditMode && this.departmentId) {
+      this.router.navigate(['/departments', this.departmentId]);
+    } else {
+      this.router.navigate(['/departments']);
+    }
   }
 
   showMessage(message: string): void {
@@ -130,9 +135,5 @@ export class DepartmentFormComponent implements OnInit {
       horizontalPosition: 'end',
       verticalPosition: 'top',
     });
-  }
-
-  getFormTitle(): string {
-    return this.isEditMode ? 'Edit Department' : 'Create Department';
   }
 }

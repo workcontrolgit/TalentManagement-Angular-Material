@@ -1,12 +1,11 @@
 mat-card {
   margin: 16px;
-  max-width: 600px;
+  max-width: 800px;
 }
 
 mat-card-header {
   padding: 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  margin-bottom: 24px;
 
   mat-card-title {
     font-size: 20px;
@@ -19,24 +18,23 @@ mat-card-content {
   padding: 24px;
 }
 
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 .form-section {
-  mat-form-field {
-    width: 100%;
+  margin-bottom: 24px;
 
-    &.full-width {
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    mat-form-field {
       width: 100%;
     }
   }
@@ -45,12 +43,7 @@ form {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 24px;
+  gap: 8px;
+  padding-top: 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
-
-  button {
-    min-width: 120px;
-  }
 }

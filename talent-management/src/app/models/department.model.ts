@@ -4,13 +4,15 @@
 export interface Department {
   id: string;
   name: string;
+  createdAt?: string;
+  lastModifiedAt?: string;
 }
 
 /**
  * Create Department Command
  */
 export interface CreateDepartmentCommand {
-  name?: string;
+  name: string;
 }
 
 /**
@@ -18,5 +20,5 @@ export interface CreateDepartmentCommand {
  */
 export interface UpdateDepartmentCommand {
   id: string;
-  name?: string;
+  name: string;
 }
