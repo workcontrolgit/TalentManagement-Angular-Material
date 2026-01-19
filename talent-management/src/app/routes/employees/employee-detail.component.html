@@ -17,7 +17,7 @@
         mat-raised-button
         color="accent"
         (click)="editEmployee()"
-        *appHasRole="'HRAdmin'">
+        *appHasRole="['HRAdmin', 'Manager']">
         <mat-icon>edit</mat-icon>
         Edit
       </button>
@@ -25,7 +25,7 @@
         mat-raised-button
         color="warn"
         (click)="deleteEmployee()"
-        *appHasRole="'HRAdmin'">
+        *appHasRole="['HRAdmin', 'Manager']">
         <mat-icon>delete</mat-icon>
         Delete
       </button>
@@ -48,7 +48,7 @@
           </mat-list-item>
           <mat-list-item>
             <span matListItemTitle>Date of Birth</span>
-            <span matListItemLine>{{ employee.dateOfBirth | date }}</span>
+            <span matListItemLine>{{ (employee.dateOfBirth || employee.birthday) | date }}</span>
           </mat-list-item>
           <mat-list-item>
             <span matListItemTitle>Gender</span>
@@ -70,7 +70,7 @@
           <mat-list-item>
             <span matListItemTitle>Phone Number</span>
             <span matListItemLine>
-              <a [href]="'tel:' + employee.phoneNumber">{{ employee.phoneNumber }}</a>
+              <a [href]="'tel:' + (employee.phoneNumber || employee.phone)">{{ employee.phoneNumber || employee.phone }}</a>
             </span>
           </mat-list-item>
           <mat-list-item *ngIf="employee.address">
@@ -84,7 +84,7 @@
         <h3>Employment Information</h3>
         <mat-divider></mat-divider>
         <mat-list>
-          <mat-list-item>
+          <mat-list-item *ngIf="employee.hireDate">
             <span matListItemTitle>Hire Date</span>
             <span matListItemLine>{{ employee.hireDate | date }}</span>
           </mat-list-item>
@@ -94,19 +94,17 @@
           </mat-list-item>
           <mat-list-item>
             <span matListItemTitle>Department</span>
-            <span matListItemLine>{{ employee.department?.name || 'N/A' }}</span>
+            <span matListItemLine>{{ employee.departmentName || employee.department?.name || 'N/A' }}</span>
           </mat-list-item>
           <mat-list-item>
             <span matListItemTitle>Position</span>
-            <span matListItemLine>{{ employee.position?.positionTitle || 'N/A' }}</span>
+            <span matListItemLine>{{ employee.positionTitle || employee.position?.positionTitle || 'N/A' }}</span>
           </mat-list-item>
-          <mat-list-item>
+          <mat-list-item *ngIf="employee.salaryRange">
             <span matListItemTitle>Salary Range</span>
             <span matListItemLine>
-              {{ employee.salaryRange?.name || 'N/A' }}
-              <span *ngIf="employee.salaryRange">
-                (${{ employee.salaryRange.minSalary | number }} - ${{ employee.salaryRange.maxSalary | number }})
-              </span>
+              {{ employee.salaryRange.name }}
+              (${{ employee.salaryRange.minSalary | number }} - ${{ employee.salaryRange.maxSalary | number }})
             </span>
           </mat-list-item>
         </mat-list>

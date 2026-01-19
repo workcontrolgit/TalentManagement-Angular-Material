@@ -13,14 +13,17 @@
       "icon": "people",
       "children": [
         {
-          "route": "employees",
+          "route": "",
           "name": "employeeList",
           "type": "link"
         },
         {
-          "route": "employees/create",
+          "route": "create",
           "name": "addEmployee",
-          "type": "link"
+          "type": "link",
+          "permissions": {
+            "only": ["canAdd"]
+          }
         }
       ]
     },

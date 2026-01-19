@@ -31,12 +31,4 @@ export class EmployeeService extends BaseApiService<Employee> {
   updateEmployee(command: UpdateEmployeeCommand): Observable<void> {
     return this.update(command.id, command);
   }
-
-  /**
-   * Get paged employees with server-side pagination
-   * Uses the /api/v1/Employees/Paged endpoint
-   */
-  getPagedEmployees(params?: PaginationParams): Observable<PagedResponse<Employee>> {
-    return this.getPaged(params);
-  }
 }

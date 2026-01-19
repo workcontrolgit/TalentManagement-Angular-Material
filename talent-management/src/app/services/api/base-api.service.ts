@@ -31,10 +31,21 @@ export abstract class BaseApiService<T> {
   }
 
   /**
+   * Get paged list of entities with full response
+   */
+  getAllPaged(params?: QueryParams): Observable<PagedResponse<T>> {
+    const httpParams = this.buildHttpParams(params);
+    return this.http.get<PagedResponse<T>>(`${this.apiUrl}/${this.endpoint}`, { params: httpParams });
+  }
+
+  /**
    * Get entity by ID
    */
   getById(id: string): Observable<T> {
-    return this.http.get<T>(`${this.apiUrl}/${this.endpoint}/${id}`);
+    return this.http.get<PagedResponse<T>>(`${this.apiUrl}/${this.endpoint}/${id}`)
+      .pipe(
+        map(response => response.value as T)
+      );
   }
 
   /**
@@ -56,18 +67,6 @@ export abstract class BaseApiService<T> {
    */
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${this.endpoint}/${id}`);
-  }
-
-  /**
-   * Get paged list of entities
-   */
-  getPaged(params?: PaginationParams): Observable<PagedResponse<T>> {
-    const httpParams = this.buildHttpParams(params);
-    return this.http.post<PagedResponse<T>>(
-      `${this.apiUrl}/${this.endpoint}/Paged`,
-      {},
-      { params: httpParams }
-    );
   }
 
   /**

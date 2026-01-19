@@ -30,6 +30,37 @@ mat-card-content {
   padding: 0;
 }
 
+.search-form {
+  padding: 16px;
+  background-color: #f5f5f5;
+  margin-bottom: 0;
+
+  .search-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    align-items: start;
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    .search-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      button {
+        white-space: nowrap;
+
+        mat-icon {
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}
+
 .table-container {
   position: relative;
   min-height: 300px;
@@ -73,18 +104,20 @@ mat-card-content {
     width: 150px;
   }
 
-  .mat-column-salary {
-    width: 120px;
-    text-align: right;
+  .mat-column-positionTitle {
+    min-width: 200px;
   }
 
   .mat-column-actions {
-    width: 150px;
+    width: 120px;
     text-align: right;
-  }
 
-  button {
-    margin-left: 4px;
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+    }
   }
 }
 
