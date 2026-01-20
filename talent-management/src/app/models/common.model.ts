@@ -42,3 +42,15 @@ export interface PagedResponse<T> {
 export interface QueryParams extends PaginationParams {
   [key: string]: any;
 }
+
+/**
+ * API response wrapper
+ */
+export interface ApiResponse<T> {
+  value: T;
+  isSuccess: boolean;
+  isFailure: boolean;
+  message?: string;
+  errors: string[];
+  executionTimeMs?: number;
+}

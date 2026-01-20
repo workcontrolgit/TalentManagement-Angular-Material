@@ -19,6 +19,7 @@ import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { provideHotToastConfig } from '@ngxpert/hot-toast';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import {
   BASE_URL,
@@ -53,6 +54,7 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding()
     ),
     provideHotToastConfig(),
+    provideCharts(withDefaultRegisterables()),
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: 'i18n/', suffix: '.json' }),
     }),
