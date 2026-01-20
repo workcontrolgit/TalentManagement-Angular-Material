@@ -143,12 +143,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
+        }
       }
     },
     "/api/v1/Departments": {
@@ -156,7 +151,6 @@
         "tags": [
           "Departments"
         ],
-        "summary": "Gets a list of departments based on the specified filter.",
         "operationId": "Departments_Get",
         "parameters": [
           {
@@ -207,7 +201,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of departments.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -223,11 +217,9 @@
         "tags": [
           "Departments"
         ],
-        "summary": "Creates a new department.",
         "operationId": "Departments_Post",
         "requestBody": {
           "x-name": "command",
-          "description": "Department payload.",
           "content": {
             "application/json": {
               "schema": {
@@ -260,14 +252,12 @@
         "tags": [
           "Departments"
         ],
-        "summary": "Gets a single department by identifier.",
         "operationId": "Departments_Get2",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Department identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -277,7 +267,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of departments.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -293,14 +283,12 @@
         "tags": [
           "Departments"
         ],
-        "summary": "Updates the specified department.",
         "operationId": "Departments_Put",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Department identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -310,7 +298,6 @@
         ],
         "requestBody": {
           "x-name": "command",
-          "description": "Update payload.",
           "content": {
             "application/json": {
               "schema": {
@@ -339,14 +326,12 @@
         "tags": [
           "Departments"
         ],
-        "summary": "Deletes the specified department.",
         "operationId": "Departments_Delete",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Department identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -374,7 +359,6 @@
         "tags": [
           "Employees"
         ],
-        "summary": "Gets a list of employees based on the specified filter.",
         "operationId": "Employees_Get",
         "parameters": [
           {
@@ -470,7 +454,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of employees.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -486,11 +470,9 @@
         "tags": [
           "Employees"
         ],
-        "summary": "Creates a new employee.",
         "operationId": "Employees_Post",
         "requestBody": {
           "x-name": "command",
-          "description": "Employee payload.",
           "content": {
             "application/json": {
               "schema": {
@@ -523,14 +505,12 @@
         "tags": [
           "Employees"
         ],
-        "summary": "Gets an employee by identifier.",
         "operationId": "Employees_Get2",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Employee identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -540,7 +520,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of employees.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -556,14 +536,12 @@
         "tags": [
           "Employees"
         ],
-        "summary": "Updates an existing employee.",
         "operationId": "Employees_Put",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Employee identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -573,7 +551,6 @@
         ],
         "requestBody": {
           "x-name": "command",
-          "description": "Update payload.",
           "content": {
             "application/json": {
               "schema": {
@@ -602,14 +579,12 @@
         "tags": [
           "Employees"
         ],
-        "summary": "Deletes an employee by identifier.",
         "operationId": "Employees_Delete",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Employee identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -637,7 +612,6 @@
         "tags": [
           "Positions"
         ],
-        "summary": "Gets a list of positions based on the provided filter.",
         "operationId": "Positions_Get",
         "parameters": [
           {
@@ -706,7 +680,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of positions.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -722,11 +696,9 @@
         "tags": [
           "Positions"
         ],
-        "summary": "Creates a new position.",
         "operationId": "Positions_Post",
         "requestBody": {
           "x-name": "command",
-          "description": "The command containing the data for the new position.",
           "content": {
             "application/json": {
               "schema": {
@@ -739,7 +711,7 @@
         },
         "responses": {
           "201": {
-            "description": "A 201 Created response containing the newly created position."
+            "description": ""
           },
           "400": {
             "description": "",
@@ -759,14 +731,12 @@
         "tags": [
           "Positions"
         ],
-        "summary": "Gets a position by its Id.",
         "operationId": "Positions_Get2",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "The Id of the position.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -776,7 +746,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of positions.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -792,14 +762,12 @@
         "tags": [
           "Positions"
         ],
-        "summary": "Updates a position with the given id using the provided command.",
         "operationId": "Positions_Put",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "The id of the position to update.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -809,7 +777,6 @@
         ],
         "requestBody": {
           "x-name": "command",
-          "description": "The command containing the updated information.",
           "content": {
             "application/json": {
               "schema": {
@@ -822,7 +789,7 @@
         },
         "responses": {
           "200": {
-            "description": "The updated position.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -838,14 +805,12 @@
         "tags": [
           "Positions"
         ],
-        "summary": "Deletes a position by its Id.",
         "operationId": "Positions_Delete",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "The Id of the position to delete.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -855,7 +820,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The result of the deletion.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -873,11 +838,9 @@
         "tags": [
           "Positions"
         ],
-        "summary": "Sends an InsertMockPositionCommand to the mediator.",
         "operationId": "Positions_AddMock",
         "requestBody": {
           "x-name": "command",
-          "description": "The command to be sent.",
           "content": {
             "application/json": {
               "schema": {
@@ -890,7 +853,7 @@
         },
         "responses": {
           "200": {
-            "description": "The result of the command.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -908,7 +871,6 @@
         "tags": [
           "SalaryRanges"
         ],
-        "summary": "Gets a list of salary ranges based on the specified filter.",
         "operationId": "SalaryRanges_Get",
         "parameters": [
           {
@@ -959,7 +921,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of salary ranges.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -975,11 +937,9 @@
         "tags": [
           "SalaryRanges"
         ],
-        "summary": "Creates a new salary range.",
         "operationId": "SalaryRanges_Post",
         "requestBody": {
           "x-name": "command",
-          "description": "Salary range payload.",
           "content": {
             "application/json": {
               "schema": {
@@ -1012,14 +972,12 @@
         "tags": [
           "SalaryRanges"
         ],
-        "summary": "Gets a salary range by identifier.",
         "operationId": "SalaryRanges_Get2",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Salary range identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -1029,7 +987,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of salary ranges.",
+            "description": "",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -1045,14 +1003,12 @@
         "tags": [
           "SalaryRanges"
         ],
-        "summary": "Updates an existing salary range.",
         "operationId": "SalaryRanges_Put",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Salary range identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -1062,7 +1018,6 @@
         ],
         "requestBody": {
           "x-name": "command",
-          "description": "Update payload.",
           "content": {
             "application/json": {
               "schema": {
@@ -1091,14 +1046,12 @@
         "tags": [
           "SalaryRanges"
         ],
-        "summary": "Deletes a salary range.",
         "operationId": "SalaryRanges_Delete",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Salary range identifier.",
             "schema": {
               "type": "string",
               "format": "guid"
