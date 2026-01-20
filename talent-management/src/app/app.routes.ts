@@ -22,6 +22,8 @@ import { PositionFormComponent } from './routes/positions/position-form.componen
 import { SalaryRangeListComponent } from './routes/salary-ranges/salary-range-list.component';
 import { SalaryRangeDetailComponent } from './routes/salary-ranges/salary-range-detail.component';
 import { SalaryRangeFormComponent } from './routes/salary-ranges/salary-range-form.component';
+import { ProfileOverviewComponent } from './routes/profile/profile-overview.component';
+import { ProfileSettingsComponent } from './routes/profile/profile-settings.component';
 
 export const routes: Routes = [
   {
@@ -48,6 +50,14 @@ export const routes: Routes = [
       { path: 'salary-ranges/create', component: SalaryRangeFormComponent, canActivate: [hrAdminGuard] },
       { path: 'salary-ranges/edit/:id', component: SalaryRangeFormComponent, canActivate: [hrAdminGuard] },
       { path: 'salary-ranges/:id', component: SalaryRangeDetailComponent },
+      {
+        path: 'profile',
+        children: [
+          { path: 'overview', component: ProfileOverviewComponent },
+          { path: 'settings', component: ProfileSettingsComponent },
+          { path: '', redirectTo: 'overview', pathMatch: 'full' },
+        ],
+      },
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },

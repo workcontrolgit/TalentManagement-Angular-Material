@@ -154,8 +154,17 @@ export class PositionFormComponent implements OnInit {
 
       this.positionService.createPosition(command).subscribe({
         next: (position) => {
+          console.log('Position created - Response:', position);
+          console.log('Position ID:', position?.id);
           this.showMessage('Position created successfully');
-          this.router.navigate(['/positions', position.id]);
+          if (position?.id) {
+            console.log('Navigating to detail page:', '/positions/' + position.id);
+            this.router.navigate(['/positions', position.id]);
+          } else {
+            console.warn('No position ID returned, navigating to list page');
+            this.router.navigate(['/positions']);
+          }
+          this.loading = false;
         },
         error: error => {
           console.error('Error creating position:', error);

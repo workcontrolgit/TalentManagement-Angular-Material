@@ -6,11 +6,14 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div *ngIf="loading" class="loading-spinner">
-      <mat-spinner></mat-spinner>
-    </div>
+    <!-- Loading Spinner Overlay -->
+    @if (loading) {
+      <div class="loading-overlay">
+        <mat-spinner></mat-spinner>
+      </div>
+    }
 
-    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
       <div class="form-section">
         <h3>Personal Information</h3>
         <div class="form-row">

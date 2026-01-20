@@ -131,8 +131,17 @@ export class SalaryRangeFormComponent implements OnInit {
 
       this.salaryRangeService.createSalaryRange(command).subscribe({
         next: (salaryRange) => {
+          console.log('Salary range created - Response:', salaryRange);
+          console.log('Salary range ID:', salaryRange?.id);
           this.showMessage('Salary range created successfully');
-          this.router.navigate(['/salary-ranges', salaryRange.id]);
+          if (salaryRange?.id) {
+            console.log('Navigating to detail page:', '/salary-ranges/' + salaryRange.id);
+            this.router.navigate(['/salary-ranges', salaryRange.id]);
+          } else {
+            console.warn('No salary range ID returned, navigating to list page');
+            this.router.navigate(['/salary-ranges']);
+          }
+          this.loading = false;
         },
         error: error => {
           console.error('Error creating salary range:', error);
