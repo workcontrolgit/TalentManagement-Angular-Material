@@ -48,6 +48,109 @@
         }
       }
     },
+    "/api/v1/cache/invalidate": {
+      "post": {
+        "tags": [
+          "Cache"
+        ],
+        "operationId": "Cache_Invalidate",
+        "parameters": [
+          {
+            "name": "invalidateAll",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CacheInvalidationRequest"
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cache/stats": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "operationId": "Cache_Stats",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard/metrics": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "Dashboard_GetMetrics",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultOfDashboardMetricsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/Departments": {
       "get": {
         "tags": [
@@ -517,41 +620,6 @@
         "responses": {
           "200": {
             "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Employees/Paged": {
-      "post": {
-        "tags": [
-          "Employees"
-        ],
-        "summary": "Retrieves a paged list of employees.\nSupport Ngx-DataTables https://medium.com/scrum-and-coke/angular-11-pagination-of-zillion-rows-45d8533538c0",
-        "operationId": "Employees_Paged",
-        "requestBody": {
-          "x-name": "query",
-          "description": "The query parameters for the paged list.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PagedEmployeesQuery"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "A paged list of employees.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -1085,6 +1153,225 @@
           }
         }
       },
+      "CacheInvalidationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "prefix": {
+            "type": "string",
+            "nullable": true
+          },
+          "invalidateAll": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ResultOfDashboardMetricsDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/DashboardMetricsDto"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "DashboardMetricsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "totalEmployees": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalDepartments": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPositions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalSalaryRanges": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newHiresThisMonth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "averageSalary": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "employeesByDepartment": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DepartmentMetricDto"
+            }
+          },
+          "employeesByPosition": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionMetricDto"
+            }
+          },
+          "employeesBySalaryRange": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SalaryRangeMetricDto"
+            }
+          },
+          "genderDistribution": {
+            "$ref": "#/components/schemas/GenderMetricDto"
+          },
+          "recentEmployees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecentEmployeeDto"
+            }
+          }
+        }
+      },
+      "DepartmentMetricDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "departmentId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "departmentName": {
+            "type": "string"
+          },
+          "employeeCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PositionMetricDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "positionId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "positionTitle": {
+            "type": "string"
+          },
+          "employeeCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SalaryRangeMetricDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "salaryRangeId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "rangeName": {
+            "type": "string"
+          },
+          "minSalary": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "maxSalary": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "employeeCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GenderMetricDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "male": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "female": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RecentEmployeeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "positionTitle": {
+            "type": "string"
+          },
+          "departmentName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Result": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "isFailure": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "executionTimeMs": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
       "CreateDepartmentCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1106,143 +1393,6 @@
           "name": {
             "type": "string",
             "nullable": true
-          }
-        }
-      },
-      "PagedEmployeesQuery": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/QueryParameter"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "draw": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "start": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "length": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "order": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/SortOrder"
-                }
-              },
-              "search": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Search"
-                  }
-                ]
-              },
-              "columns": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/Column"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "SortOrder": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "column": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "dir": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "Search": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "value": {
-            "type": "string",
-            "nullable": true
-          },
-          "regex": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Column": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "data": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "searchable": {
-            "type": "boolean"
-          },
-          "orderable": {
-            "type": "boolean"
-          },
-          "search": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Search"
-              }
-            ]
-          }
-        }
-      },
-      "QueryParameter": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PagingParameter"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "orderBy": {
-                "type": "string",
-                "nullable": true
-              },
-              "fields": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "PagingParameter": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
