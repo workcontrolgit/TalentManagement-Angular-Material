@@ -109,8 +109,17 @@ export class DepartmentFormComponent implements OnInit {
 
       this.departmentService.createDepartment(command).subscribe({
         next: (department) => {
+          console.log('Department created - Response:', department);
+          console.log('Department ID:', department?.id);
           this.showMessage('Department created successfully');
-          this.router.navigate(['/departments', department.id]);
+          if (department?.id) {
+            console.log('Navigating to detail page:', '/departments/' + department.id);
+            this.router.navigate(['/departments', department.id]);
+          } else {
+            console.warn('No department ID returned, navigating to list page');
+            this.router.navigate(['/departments']);
+          }
+          this.loading = false;
         },
         error: error => {
           console.error('Error creating department:', error);

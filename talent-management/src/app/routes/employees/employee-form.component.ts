@@ -176,8 +176,17 @@ export class EmployeeFormComponent implements OnInit {
 
       this.employeeService.createEmployee(command).subscribe({
         next: (employee) => {
+          console.log('Employee created - Response:', employee);
+          console.log('Employee ID:', employee?.id);
           this.showMessage('Employee created successfully');
-          this.router.navigate(['/employees', employee.id]);
+          if (employee?.id) {
+            console.log('Navigating to detail page:', '/employees/' + employee.id);
+            this.router.navigate(['/employees', employee.id]);
+          } else {
+            console.warn('No employee ID returned, navigating to list page');
+            this.router.navigate(['/employees']);
+          }
+          this.loading = false;
         },
         error: error => {
           console.error('Error creating employee:', error);

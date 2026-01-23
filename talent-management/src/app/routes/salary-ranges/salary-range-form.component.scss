@@ -17,13 +17,20 @@ mat-card-header {
 
 mat-card-content {
   padding: 16px;
+  position: relative;
 }
 
-.loading-spinner {
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 300px;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .form-section {

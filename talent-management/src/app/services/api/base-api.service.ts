@@ -52,7 +52,18 @@ export abstract class BaseApiService<T> {
    * Create new entity
    */
   create(data: Partial<T>): Observable<T> {
-    return this.http.post<T>(`${this.apiUrl}/${this.endpoint}`, data);
+    return this.http.post<any>(`${this.apiUrl}/${this.endpoint}`, data)
+      .pipe(
+        map(response => {
+          // Handle wrapped response with value property containing the ID
+          if (response && 'value' in response && typeof response.value === 'string') {
+            // API returns { value: "guid-string" }
+            return { id: response.value } as T;
+          }
+          // Handle normal entity response
+          return response as T;
+        })
+      );
   }
 
   /**
