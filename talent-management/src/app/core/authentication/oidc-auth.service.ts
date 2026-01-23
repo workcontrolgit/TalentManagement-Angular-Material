@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { OAuthService, OAuthEvent } from 'angular-oauth2-oidc';
-import { BehaviorSubject, filter } from 'rxjs';
+import { BehaviorSubject, Subject, filter } from 'rxjs';
 import { authConfig } from '../../config/auth.config';
 
 export interface UserInfo {
@@ -24,6 +24,10 @@ export class OidcAuthService {
 
   private userInfoSubject = new BehaviorSubject<UserInfo | null>(null);
   public userInfo$ = this.userInfoSubject.asObservable();
+
+  // Event emitter for permission refresh - used by StartupService
+  private permissionsChangeSubject = new Subject<void>();
+  public permissionsChange$ = this.permissionsChangeSubject.asObservable();
 
   constructor() {
     this.configureOAuth();
@@ -94,6 +98,8 @@ export class OidcAuthService {
     this.oauthService.logOut();
     this.isAuthenticatedSubject.next(false);
     this.userInfoSubject.next(null);
+    // Emit event to refresh permissions (reset to Guest role)
+    this.permissionsChangeSubject.next();
   }
 
   /**
@@ -104,6 +110,8 @@ export class OidcAuthService {
       const claims = this.oauthService.getIdentityClaims() as UserInfo;
       this.userInfoSubject.next(claims);
       this.isAuthenticatedSubject.next(true);
+      // Emit event to refresh permissions based on user's roles from token
+      this.permissionsChangeSubject.next();
     } catch (error) {
       console.error('Error loading user info:', error);
     }

@@ -15,6 +15,14 @@ export class StartupService {
   private readonly permissonsService = inject(NgxPermissionsService);
   private readonly rolesService = inject(NgxRolesService);
 
+  constructor() {
+    // Subscribe to authentication changes to refresh permissions
+    this.oidcAuth.permissionsChange$.subscribe(() => {
+      console.log('StartupService: Permission change event received, refreshing permissions');
+      this.setPermissions();
+    });
+  }
+
   /**
    * Load the application only after get the menu or other essential informations
    * such as permissions and roles.
@@ -44,7 +52,11 @@ export class StartupService {
     this.menuService.set(menu);
   }
 
-  private setPermissions() {
+  /**
+   * Set permissions based on current user roles
+   * This method is public so it can be called after login/logout to refresh permissions
+   */
+  setPermissions() {
     // Get roles from OIDC token (if authenticated)
     const roles = this.oidcAuth.getUserRoles();
     console.log('StartupService: User roles from token:', roles);
