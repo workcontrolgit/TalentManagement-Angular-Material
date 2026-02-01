@@ -11,9 +11,9 @@ export const environment = {
   apiUrl: 'https://localhost:44378/api/v1',
 
   // Duende IdentityServer Configuration
-  identityServerUrl: 'https://sts.skoruba.local',
+  identityServerUrl: 'https://localhost:44310',
   clientId: 'TalentManagement',
-  scope: 'openid profile email app.api.talentmanagement.read',
+  scope: 'openid profile email roles app.api.talentmanagement.read app.api.talentmanagement.write',
 
   // Feature Flags
   allowAnonymousAccess: true,

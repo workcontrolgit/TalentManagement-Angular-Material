@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -30,7 +30,7 @@ import { OidcAuthService } from '../../../core/authentication/oidc-auth.service'
     TranslateModule,
   ],
 })
-export class Login {
+export class Login implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
@@ -43,6 +43,11 @@ export class Login {
     password: ['ng-matero', [Validators.required]],
     rememberMe: [false],
   });
+
+  ngOnInit() {
+    // Automatically redirect to IdentityServer login when this page loads
+    this.login();
+  }
 
   get username() {
     return this.loginForm.get('username')!;
