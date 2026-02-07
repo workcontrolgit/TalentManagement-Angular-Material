@@ -1,11 +1,10 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { OidcAuthService } from './oidc-auth.service';
 import { environment } from '../../../environments/environment';
 
 export const authGuard = (route?: ActivatedRouteSnapshot, state?: RouterStateSnapshot) => {
   const oidcAuth = inject(OidcAuthService);
-  const router = inject(Router);
 
   // Allow anonymous access if configured in environment
   if (environment.allowAnonymousAccess) {
@@ -17,6 +16,8 @@ export const authGuard = (route?: ActivatedRouteSnapshot, state?: RouterStateSna
     return true;
   }
 
-  // Redirect to login if not authenticated and anonymous access is not allowed
-  return router.parseUrl('/login');
+  // Redirect to IdentityServer for authentication
+  // Pass the target URL so user is redirected back after login
+  oidcAuth.login(state?.url);
+  return false;
 };

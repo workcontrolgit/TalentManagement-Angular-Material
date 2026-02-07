@@ -47,10 +47,12 @@ describe('authGuard function unit test', () => {
     expect(authGuard(route, state)).toBeTrue();
   });
 
-  it('should redirect to /login when not authenticated and anonymous access disabled', () => {
+  it('should call oidcAuth.login() when not authenticated and anonymous access disabled', () => {
     spyOn(oidcAuthService, 'isAuthenticated').and.returnValue(false);
+    spyOn(oidcAuthService, 'login');
 
     const result = authGuard(route, state);
-    expect(result.toString()).toBe('/login');
+    expect(oidcAuthService.login).toHaveBeenCalled();
+    expect(result).toBeFalse();
   });
 });

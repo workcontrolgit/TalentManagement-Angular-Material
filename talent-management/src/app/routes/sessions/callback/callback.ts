@@ -35,12 +35,14 @@ export class CallbackComponent implements OnInit {
         // Redirect to dashboard or original URL
         this.router.navigate(['/dashboard']);
       } else {
-        // Authentication failed, redirect to login
-        this.router.navigate(['/login']);
+        // Authentication failed, redirect to dashboard (guest access)
+        console.warn('Authentication callback failed, redirecting to dashboard as guest');
+        this.router.navigate(['/dashboard']);
       }
     } catch (error) {
       console.error('Error processing callback:', error);
-      this.router.navigate(['/login']);
+      // Redirect to dashboard as guest on error
+      this.router.navigate(['/dashboard']);
     }
   }
 }
