@@ -44,12 +44,15 @@ describe('ErrorInterceptor', () => {
   it('should handle status code 401', () => {
     spyOn(router, 'navigateByUrl');
     spyOn(toast, 'error');
+    spyOn(console, 'warn');
 
     http.get('/user').subscribe({ next: emptyFn, error: emptyFn, complete: emptyFn });
     httpMock.expectOne('/user').flush({}, { status: 401, statusText: 'Unauthorized' });
 
     expect(toast.error).toHaveBeenCalledWith('401 Unauthorized');
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/auth/login');
+    expect(console.warn).toHaveBeenCalledWith('Unauthorized access - authentication required');
+    // OIDC: No redirect to login - auth guard handles redirects to IdentityServer
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 
   it('should handle status code 403', () => {
