@@ -1,8 +1,8 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NgxPermissionsModule, NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { LocalStorageService, MemoryStorageService } from '@shared/services/storage.service';
-import { admin, TokenService } from '@core/authentication';
+import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { OidcAuthService } from '@core/authentication';
 import { MenuService } from '@core/bootstrap/menu.service';
 import { StartupService } from '@core/bootstrap/startup.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -10,7 +10,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('StartupService', () => {
   let httpMock: HttpTestingController;
   let startup: StartupService;
-  let tokenService: TokenService;
+  let oidcAuthService: OidcAuthService;
   let menuService: MenuService;
   let mockPermissionsService: NgxPermissionsService;
   let mockRolesService: NgxRolesService;
@@ -19,10 +19,7 @@ describe('StartupService', () => {
     TestBed.configureTestingModule({
       imports: [NgxPermissionsModule.forRoot()],
       providers: [
-        {
-          provide: LocalStorageService,
-          useClass: MemoryStorageService,
-        },
+        provideOAuthClient(),
         {
           provide: NgxPermissionsService,
           useValue: {
@@ -33,7 +30,7 @@ describe('StartupService', () => {
           provide: NgxRolesService,
           useValue: {
             flushRoles: () => void 0,
-            addRoles: (params: { ADMIN: string[] }) => void 0,
+            addRoles: (params: any) => void 0,
           },
         },
         StartupService,
@@ -43,7 +40,7 @@ describe('StartupService', () => {
     });
     httpMock = TestBed.inject(HttpTestingController);
     startup = TestBed.inject(StartupService);
-    tokenService = TestBed.inject(TokenService);
+    oidcAuthService = TestBed.inject(OidcAuthService);
     menuService = TestBed.inject(MenuService);
     mockPermissionsService = TestBed.inject(NgxPermissionsService);
     mockRolesService = TestBed.inject(NgxRolesService);
@@ -51,40 +48,51 @@ describe('StartupService', () => {
 
   afterEach(() => httpMock.verify());
 
-  it('should load menu when token changed and token valid', async () => {
+  it('should load menu from JSON file', async () => {
     const menuData = { menu: [] };
-    const permissions = ['canAdd', 'canDelete', 'canEdit', 'canRead'];
     spyOn(menuService, 'addNamespace');
     spyOn(menuService, 'set');
     spyOn(mockPermissionsService, 'loadPermissions');
     spyOn(mockRolesService, 'flushRoles');
     spyOn(mockRolesService, 'addRoles');
 
-    await startup.load();
+    const loadPromise = startup.load();
 
-    tokenService.set({ access_token: 'token', token_type: 'bearer' });
+    // Flush HTTP request before awaiting the promise
+    httpMock.expectOne('data/menu.json').flush(menuData);
 
-    httpMock.expectOne('/user').flush(admin);
-    httpMock.expectOne('/user/menu').flush(menuData);
+    await loadPromise;
 
     expect(menuService.addNamespace).toHaveBeenCalledWith(menuData.menu, 'menu');
     expect(menuService.set).toHaveBeenCalledWith(menuData.menu);
-    expect(mockPermissionsService.loadPermissions).toHaveBeenCalledWith(permissions);
-    expect(mockRolesService.flushRoles).toHaveBeenCalledWith();
-    expect(mockRolesService.addRoles).toHaveBeenCalledWith({ ADMIN: permissions });
+    expect(mockPermissionsService.loadPermissions).toHaveBeenCalled();
+    expect(mockRolesService.flushRoles).toHaveBeenCalled();
   });
 
-  it('should clear menu when token changed and token invalid', async () => {
-    spyOn(menuService, 'addNamespace');
-    spyOn(menuService, 'set');
+  it('should set permissions for authenticated user with HRAdmin role', () => {
+    const permissions = ['canAdd', 'canDelete', 'canEdit', 'canRead'];
+    spyOn(oidcAuthService, 'getUserRoles').and.returnValue(['HRAdmin']);
+    spyOn(mockPermissionsService, 'loadPermissions');
+    spyOn(mockRolesService, 'flushRoles');
+    spyOn(mockRolesService, 'addRoles');
 
-    await startup.load();
+    startup.setPermissions();
 
-    tokenService.set({ access_token: '', token_type: 'bearer' });
+    expect(mockPermissionsService.loadPermissions).toHaveBeenCalledWith(permissions);
+    expect(mockRolesService.flushRoles).toHaveBeenCalled();
+    expect(mockRolesService.addRoles).toHaveBeenCalledWith({ HRAdmin: permissions });
+  });
 
-    httpMock.expectNone('/user/menu');
+  it('should set read-only permissions for anonymous user', () => {
+    spyOn(oidcAuthService, 'getUserRoles').and.returnValue([]);
+    spyOn(mockPermissionsService, 'loadPermissions');
+    spyOn(mockRolesService, 'flushRoles');
+    spyOn(mockRolesService, 'addRoles');
 
-    expect(menuService.addNamespace).toHaveBeenCalledWith([], 'menu');
-    expect(menuService.set).toHaveBeenCalledWith([]);
+    startup.setPermissions();
+
+    expect(mockPermissionsService.loadPermissions).toHaveBeenCalledWith(['canRead']);
+    expect(mockRolesService.flushRoles).toHaveBeenCalled();
+    expect(mockRolesService.addRoles).toHaveBeenCalledWith({ Guest: ['canRead'] });
   });
 });

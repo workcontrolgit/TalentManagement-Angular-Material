@@ -147,8 +147,8 @@ export class UserButton implements OnInit, OnDestroy {
   }
 
   login() {
-    // Navigate to login page instead of directly calling OIDC
-    this.router.navigateByUrl('/login');
+    // Redirect directly to IdentityServer for authentication
+    this.oidcAuth.login();
   }
 
   logout() {

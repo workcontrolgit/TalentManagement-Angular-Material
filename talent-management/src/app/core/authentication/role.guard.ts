@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
+import { CanActivateFn, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { OidcAuthService } from './oidc-auth.service';
 
 /**
@@ -17,7 +17,7 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
 
   // Check if user is authenticated
   if (!authService.isAuthenticated()) {
-    router.navigate(['/login']);
+    authService.login();
     return false;
   }
 
@@ -47,7 +47,7 @@ export const employeeGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    router.navigate(['/login']);
+    authService.login();
     return false;
   }
 
@@ -67,7 +67,7 @@ export const managerGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    router.navigate(['/login']);
+    authService.login();
     return false;
   }
 
@@ -87,7 +87,7 @@ export const hrAdminGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    router.navigate(['/login']);
+    authService.login();
     return false;
   }
 

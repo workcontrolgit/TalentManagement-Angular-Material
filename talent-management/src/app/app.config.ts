@@ -32,8 +32,6 @@ import { environment } from '@env/environment';
 import { formlyConfigFactory, PaginatorI18nService } from '@shared';
 import { routes } from './app.routes';
 
-import { LoginService } from '@core/authentication/login.service';
-import { FakeLoginService } from './fake-login.service';
 import { OidcAuthService } from './core/authentication/oidc-auth.service';
 import { authTokenInterceptor } from './core/interceptors/auth-token-interceptor';
 
@@ -61,12 +59,6 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(
       NgxPermissionsModule.forRoot(),
     ),
-    // ==================================================
-    // 👇 ❌ Remove it in the realworld application
-    //
-    { provide: LoginService, useClass: FakeLoginService },
-    //
-    // ==================================================
     provideFormlyCore([...withFormlyMaterial()]),
     {
       provide: FORMLY_CONFIG,

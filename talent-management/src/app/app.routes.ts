@@ -6,7 +6,6 @@ import { Dashboard } from './routes/dashboard/dashboard';
 import { Error403 } from './routes/sessions/error-403';
 import { Error404 } from './routes/sessions/error-404';
 import { Error500 } from './routes/sessions/error-500';
-import { Login } from './routes/sessions/login/login';
 import { Register } from './routes/sessions/register/register';
 import { CallbackComponent } from './routes/sessions/callback/callback';
 import { hrAdminGuard, managerGuard } from './core/authentication/role.guard';
@@ -67,11 +66,9 @@ export const routes: Routes = [
     path: 'auth',
     component: AuthLayout,
     children: [
-      { path: 'login', component: Login },
       { path: 'register', component: Register },
     ],
   },
-  { path: 'login', component: Login },
   { path: 'callback', component: CallbackComponent },
   { path: '**', redirectTo: 'dashboard' },
 ];
