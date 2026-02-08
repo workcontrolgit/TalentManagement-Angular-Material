@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { authGuard } from './auth-guard';
 import { OidcAuthService } from './oidc-auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   template: '',
@@ -44,15 +45,23 @@ describe('authGuard function unit test', () => {
   it('should allow access when user is authenticated', () => {
     spyOn(oidcAuthService, 'isAuthenticated').and.returnValue(true);
 
-    expect(authGuard(route, state)).toBeTrue();
+    const result = TestBed.runInInjectionContext(() => authGuard(route, state));
+    expect(result).toBeTrue();
   });
 
   it('should call oidcAuth.login() when not authenticated and anonymous access disabled', () => {
+    // Temporarily disable anonymous access for this test
+    const originalValue = environment.allowAnonymousAccess;
+    environment.allowAnonymousAccess = false;
+
     spyOn(oidcAuthService, 'isAuthenticated').and.returnValue(false);
     spyOn(oidcAuthService, 'login');
 
-    const result = authGuard(route, state);
+    const result = TestBed.runInInjectionContext(() => authGuard(route, state));
     expect(oidcAuthService.login).toHaveBeenCalled();
     expect(result).toBeFalse();
+
+    // Restore original value
+    environment.allowAnonymousAccess = originalValue;
   });
 });

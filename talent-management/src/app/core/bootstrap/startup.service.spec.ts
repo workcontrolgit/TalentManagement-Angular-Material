@@ -56,9 +56,12 @@ describe('StartupService', () => {
     spyOn(mockRolesService, 'flushRoles');
     spyOn(mockRolesService, 'addRoles');
 
-    await startup.load();
+    const loadPromise = startup.load();
 
+    // Flush HTTP request before awaiting the promise
     httpMock.expectOne('data/menu.json').flush(menuData);
+
+    await loadPromise;
 
     expect(menuService.addNamespace).toHaveBeenCalledWith(menuData.menu, 'menu');
     expect(menuService.set).toHaveBeenCalledWith(menuData.menu);
