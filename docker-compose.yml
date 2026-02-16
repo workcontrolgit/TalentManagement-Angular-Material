@@ -1,0 +1,21 @@
+﻿version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./talent-management
+      dockerfile: Dockerfile
+    container_name: talent-management-angular
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./talent-management:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - talent-net
+
+networks:
+  talent-net:
+    driver: bridge

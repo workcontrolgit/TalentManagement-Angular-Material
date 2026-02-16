@@ -213,7 +213,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
   }
 
   canDelete(): boolean {
-    return this.authService.isHRAdmin() || this.authService.isManager();
+    return this.authService.isHRAdmin();
   }
 
   canCreate(): boolean {

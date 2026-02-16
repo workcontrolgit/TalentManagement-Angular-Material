@@ -94,7 +94,7 @@ export class DepartmentDetailComponent implements OnInit {
   }
 
   canDelete(): boolean {
-    return this.authService.isHRAdmin() || this.authService.isManager();
+    return this.authService.isHRAdmin();
   }
 
   showMessage(message: string): void {
