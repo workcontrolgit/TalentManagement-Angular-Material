@@ -107,6 +107,6 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   canDelete(): boolean {
-    return this.authService.isHRAdmin() || this.authService.isManager();
+    return this.authService.isHRAdmin();
   }
 }
