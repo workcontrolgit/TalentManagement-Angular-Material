@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PageHeader } from '@shared/components/page-header/page-header';
 import { Employee, Gender } from '../../models';
 import { EmployeeService } from '../../services/api';
@@ -24,6 +25,7 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatListModule,
+    MatSnackBarModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -35,6 +37,7 @@ export class EmployeeDetailComponent implements OnInit {
   private authService = inject(OidcAuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private snackBar = inject(MatSnackBar);
 
   employee?: Employee;
   loading = false;
@@ -87,12 +90,24 @@ export class EmployeeDetailComponent implements OnInit {
     if (!this.employee) return;
 
     if (confirm(`Are you sure you want to delete ${this.getFullName()}?`)) {
+      const name = this.getFullName();
       this.employeeService.delete(this.employee.id).subscribe({
         next: () => {
-          this.router.navigate(['/employees']);
+          const snackBarRef = this.snackBar.open(`${name} has been deleted.`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
+          snackBarRef.afterDismissed().subscribe(() => this.router.navigate(['/employees']));
+          snackBarRef.onAction().subscribe(() => this.router.navigate(['/employees']));
         },
         error: error => {
           console.error('Error deleting employee:', error);
+          this.snackBar.open('Failed to delete employee. Please try again.', 'Close', {
+            duration: 4000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
         },
       });
     }

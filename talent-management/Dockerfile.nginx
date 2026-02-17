@@ -1,0 +1,10 @@
+FROM nginx:alpine
+
+# Copy custom NGINX configuration for development
+COPY nginx.dev.conf /etc/nginx/nginx.conf
+
+# Expose NGINX port
+EXPOSE 4200
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

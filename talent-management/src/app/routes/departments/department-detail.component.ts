@@ -74,12 +74,17 @@ export class DepartmentDetailComponent implements OnInit {
     if (confirm(`Are you sure you want to delete "${this.department.name}"?`)) {
       this.departmentService.delete(this.department.id).subscribe({
         next: () => {
-          this.showMessage('Department deleted successfully');
-          this.router.navigate(['/departments']);
+          const snackBarRef = this.snackBar.open(`"${this.department.name}" has been deleted.`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
+          snackBarRef.afterDismissed().subscribe(() => this.router.navigate(['/departments']));
+          snackBarRef.onAction().subscribe(() => this.router.navigate(['/departments']));
         },
         error: error => {
           console.error('Error deleting department:', error);
-          this.showMessage('Error deleting department');
+          this.showMessage('Failed to delete department. Please try again.');
         },
       });
     }
