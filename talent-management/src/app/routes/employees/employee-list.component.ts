@@ -12,6 +12,7 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PageHeader } from '@shared/components/page-header/page-header';
 import { Employee } from '../../models';
 import { EmployeeService } from '../../services/api';
@@ -36,6 +37,7 @@ import { debounceTime, distinctUntilChanged, switchMap, map, startWith, catchErr
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatAutocompleteModule,
+    MatSnackBarModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -47,6 +49,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   private authService = inject(OidcAuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -252,10 +255,20 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     if (confirm(`Are you sure you want to delete ${this.getFullName(employee)}?`)) {
       this.employeeService.delete(employee.id).subscribe({
         next: () => {
+          this.snackBar.open(`${this.getFullName(employee)} has been deleted.`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
           this.loadEmployees();
         },
         error: error => {
           console.error('Error deleting employee:', error);
+          this.snackBar.open('Failed to delete employee. Please try again.', 'Close', {
+            duration: 4000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
         },
       });
     }

@@ -2,11 +2,15 @@
 
 WORKDIR /app
 
+# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm ci
 
+# Copy application source
 COPY . .
 
-EXPOSE 4200
+# Expose Angular dev server port (internal)
+EXPOSE 4201
 
-CMD ["npm", "start", "--", "--host", "0.0.0.0", "--poll", "2000"]
+# Start Angular dev server
+CMD ["npm", "start", "--", "--host", "0.0.0.0", "--port", "4201", "--poll", "2000"]

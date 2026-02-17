@@ -1,18 +1,30 @@
-﻿version: '3.8'
-
-services:
-  frontend:
+﻿services:
+  # Angular Development Server
+  dev-server:
     build:
       context: ./talent-management
       dockerfile: Dockerfile
-    container_name: talent-management-angular
-    ports:
-      - "4200:4200"
+    container_name: talent-management-dev-server
     volumes:
       - ./talent-management:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
+    networks:
+      - talent-net
+    expose:
+      - "4201"
+
+  # NGINX Reverse Proxy
+  nginx:
+    build:
+      context: ./talent-management
+      dockerfile: Dockerfile.nginx
+    container_name: talent-management-nginx
+    ports:
+      - "4200:4200"
+    depends_on:
+      - dev-server
     networks:
       - talent-net
 
