@@ -74,12 +74,17 @@ export class PositionDetailComponent implements OnInit {
     if (confirm(`Are you sure you want to delete "${this.position.positionTitle}"?`)) {
       this.positionService.delete(this.position.id).subscribe({
         next: () => {
-          this.showMessage('Position deleted successfully');
-          this.router.navigate(['/positions']);
+          const snackBarRef = this.snackBar.open(`"${this.position.positionTitle}" has been deleted.`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
+          snackBarRef.afterDismissed().subscribe(() => this.router.navigate(['/positions']));
+          snackBarRef.onAction().subscribe(() => this.router.navigate(['/positions']));
         },
         error: error => {
           console.error('Error deleting position:', error);
-          this.showMessage('Error deleting position');
+          this.showMessage('Failed to delete position. Please try again.');
         },
       });
     }

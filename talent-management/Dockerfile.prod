@@ -1,0 +1,31 @@
+# Multi-stage build for production Angular application with NGINX
+
+# Stage 1: Build the Angular application
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application source
+COPY . .
+
+# Build Angular application for production
+RUN npm run build:prod
+
+# Stage 2: Serve with NGINX
+FROM nginx:alpine
+
+# Copy custom NGINX configuration
+COPY nginx.prod.conf /etc/nginx/nginx.conf
+
+# Copy built Angular app from build stage to NGINX html directory
+COPY --from=build /app/dist/talent-management/browser /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

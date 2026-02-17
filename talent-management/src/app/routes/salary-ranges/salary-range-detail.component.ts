@@ -74,12 +74,17 @@ export class SalaryRangeDetailComponent implements OnInit {
     if (confirm(`Are you sure you want to delete "${this.salaryRange.name}"?`)) {
       this.salaryRangeService.delete(this.salaryRange.id).subscribe({
         next: () => {
-          this.showMessage('Salary range deleted successfully');
-          this.router.navigate(['/salary-ranges']);
+          const snackBarRef = this.snackBar.open(`"${this.salaryRange.name}" has been deleted.`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+          });
+          snackBarRef.afterDismissed().subscribe(() => this.router.navigate(['/salary-ranges']));
+          snackBarRef.onAction().subscribe(() => this.router.navigate(['/salary-ranges']));
         },
         error: error => {
           console.error('Error deleting salary range:', error);
-          this.showMessage('Error deleting salary range');
+          this.showMessage('Failed to delete salary range. Please try again.');
         },
       });
     }
