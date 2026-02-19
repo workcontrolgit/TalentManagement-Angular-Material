@@ -8,7 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { SalaryRange } from '../../models';
 import { SalaryRangeService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -26,6 +28,7 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -38,6 +41,7 @@ export class SalaryRangeDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   salaryRange!: SalaryRange;
   loading = false;
@@ -71,7 +75,18 @@ export class SalaryRangeDetailComponent implements OnInit {
   }
 
   deleteSalaryRange(): void {
-    if (confirm(`Are you sure you want to delete "${this.salaryRange.name}"?`)) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Salary Range',
+        message: `Are you sure you want to delete "${this.salaryRange.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.salaryRangeService.delete(this.salaryRange.id).subscribe({
         next: () => {
           const snackBarRef = this.snackBar.open(`"${this.salaryRange.name}" has been deleted.`, 'Close', {
@@ -87,7 +102,7 @@ export class SalaryRangeDetailComponent implements OnInit {
           this.showMessage('Failed to delete salary range. Please try again.');
         },
       });
-    }
+    });
   }
 
   goBack(): void {

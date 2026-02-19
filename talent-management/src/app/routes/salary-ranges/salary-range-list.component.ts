@@ -9,6 +9,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { PageHeader } from '@shared/components/page-header/page-header';
 import { HasRoleDirective } from '../../shared/directives/has-role.directive';
@@ -30,6 +32,7 @@ import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -41,6 +44,7 @@ export class SalaryRangeListComponent implements OnInit, AfterViewInit {
   private authService = inject(OidcAuthService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -86,18 +90,29 @@ export class SalaryRangeListComponent implements OnInit, AfterViewInit {
   }
 
   deleteSalaryRange(salaryRange: SalaryRange): void {
-    if (confirm(`Are you sure you want to delete ${salaryRange.name}?`)) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Salary Range',
+        message: `Are you sure you want to delete "${salaryRange.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.salaryRangeService.delete(salaryRange.id).subscribe({
         next: () => {
+          this.showMessage(`"${salaryRange.name}" has been deleted.`);
           this.loadSalaryRanges();
-          this.showMessage('Salary range deleted successfully');
         },
         error: error => {
           console.error('Error deleting salary range:', error);
-          this.showMessage('Error deleting salary range');
+          this.showMessage('Failed to delete salary range. Please try again.');
         },
       });
-    }
+    });
   }
 
   showMessage(message: string): void {

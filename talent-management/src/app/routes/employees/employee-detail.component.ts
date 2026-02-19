@@ -8,7 +8,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { Employee, Gender } from '../../models';
 import { EmployeeService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -26,6 +28,7 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
     MatDividerModule,
     MatListModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -38,6 +41,7 @@ export class EmployeeDetailComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   employee?: Employee;
   loading = false;
@@ -89,9 +93,20 @@ export class EmployeeDetailComponent implements OnInit {
   deleteEmployee(): void {
     if (!this.employee) return;
 
-    if (confirm(`Are you sure you want to delete ${this.getFullName()}?`)) {
-      const name = this.getFullName();
-      this.employeeService.delete(this.employee.id).subscribe({
+    const name = this.getFullName();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Employee',
+        message: `Are you sure you want to delete ${name}? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.employeeService.delete(this.employee!.id).subscribe({
         next: () => {
           const snackBarRef = this.snackBar.open(`${name} has been deleted.`, 'Close', {
             duration: 3000,
@@ -110,7 +125,7 @@ export class EmployeeDetailComponent implements OnInit {
           });
         },
       });
-    }
+    });
   }
 
   goBack(): void {

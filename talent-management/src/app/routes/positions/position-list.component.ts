@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { PageHeader } from '@shared/components/page-header/page-header';
 import { HasRoleDirective } from '../../shared/directives/has-role.directive';
@@ -157,18 +158,29 @@ export class PositionListComponent implements OnInit, AfterViewInit {
   }
 
   deletePosition(position: Position): void {
-    if (confirm(`Are you sure you want to delete ${position.positionTitle}?`)) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Position',
+        message: `Are you sure you want to delete "${position.positionTitle}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.positionService.delete(position.id).subscribe({
         next: () => {
+          this.showMessage(`"${position.positionTitle}" has been deleted.`);
           this.loadPositions();
-          this.showMessage('Position deleted successfully');
         },
         error: error => {
           console.error('Error deleting position:', error);
-          this.showMessage('Error deleting position');
+          this.showMessage('Failed to delete position. Please try again.');
         },
       });
-    }
+    });
   }
 
   addMockData(): void {
