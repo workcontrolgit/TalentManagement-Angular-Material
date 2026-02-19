@@ -13,7 +13,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { Employee } from '../../models';
 import { EmployeeService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -38,6 +40,7 @@ import { debounceTime, distinctUntilChanged, switchMap, map, startWith, catchErr
     MatTooltipModule,
     MatAutocompleteModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -50,6 +53,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -252,10 +256,22 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
 
   deleteEmployee(employee: Employee): void {
-    if (confirm(`Are you sure you want to delete ${this.getFullName(employee)}?`)) {
+    const name = this.getFullName(employee);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Employee',
+        message: `Are you sure you want to delete ${name}? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.employeeService.delete(employee.id).subscribe({
         next: () => {
-          this.snackBar.open(`${this.getFullName(employee)} has been deleted.`, 'Close', {
+          this.snackBar.open(`${name} has been deleted.`, 'Close', {
             duration: 3000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
@@ -271,7 +287,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
           });
         },
       });
-    }
+    });
   }
 
   createEmployee(): void {

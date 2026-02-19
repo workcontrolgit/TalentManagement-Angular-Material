@@ -8,7 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { Position } from '../../models';
 import { PositionService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -26,6 +28,7 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -38,6 +41,7 @@ export class PositionDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   position!: Position;
   loading = false;
@@ -71,7 +75,18 @@ export class PositionDetailComponent implements OnInit {
   }
 
   deletePosition(): void {
-    if (confirm(`Are you sure you want to delete "${this.position.positionTitle}"?`)) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Position',
+        message: `Are you sure you want to delete "${this.position.positionTitle}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.positionService.delete(this.position.id).subscribe({
         next: () => {
           const snackBarRef = this.snackBar.open(`"${this.position.positionTitle}" has been deleted.`, 'Close', {
@@ -87,7 +102,7 @@ export class PositionDetailComponent implements OnInit {
           this.showMessage('Failed to delete position. Please try again.');
         },
       });
-    }
+    });
   }
 
   goBack(): void {
