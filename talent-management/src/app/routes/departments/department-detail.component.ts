@@ -8,7 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { Department } from '../../models';
 import { DepartmentService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -26,6 +28,7 @@ import { HasRoleDirective } from '../../shared/directives/has-role.directive';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -38,6 +41,7 @@ export class DepartmentDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   department!: Department;
   loading = false;
@@ -71,7 +75,18 @@ export class DepartmentDetailComponent implements OnInit {
   }
 
   deleteDepartment(): void {
-    if (confirm(`Are you sure you want to delete "${this.department.name}"?`)) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Department',
+        message: `Are you sure you want to delete "${this.department.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.departmentService.delete(this.department.id).subscribe({
         next: () => {
           const snackBarRef = this.snackBar.open(`"${this.department.name}" has been deleted.`, 'Close', {
@@ -87,7 +102,7 @@ export class DepartmentDetailComponent implements OnInit {
           this.showMessage('Failed to delete department. Please try again.');
         },
       });
-    }
+    });
   }
 
   goBack(): void {

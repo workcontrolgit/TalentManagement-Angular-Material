@@ -13,7 +13,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { Department } from '../../models';
 import { DepartmentService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
@@ -38,6 +40,7 @@ import { debounceTime, distinctUntilChanged, switchMap, map, startWith, catchErr
     MatTooltipModule,
     MatAutocompleteModule,
     MatSnackBarModule,
+    MatDialogModule,
     PageHeader,
     HasRoleDirective,
   ],
@@ -50,6 +53,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -190,18 +194,29 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
   }
 
   deleteDepartment(department: Department): void {
-    if (confirm(`Are you sure you want to delete "${department.name}"?`)) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Department',
+        message: `Are you sure you want to delete "${department.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } as ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
       this.departmentService.delete(department.id).subscribe({
         next: () => {
-          this.showMessage('Department deleted successfully');
+          this.showMessage(`"${department.name}" has been deleted.`);
           this.loadDepartments();
         },
         error: error => {
           console.error('Error deleting department:', error);
-          this.showMessage('Error deleting department');
+          this.showMessage('Failed to delete department. Please try again.');
         },
       });
-    }
+    });
   }
 
   createDepartment(): void {
