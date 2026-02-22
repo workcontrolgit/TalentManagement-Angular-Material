@@ -7,9 +7,9 @@ export const environment = {
   apiUrl: 'https://your-production-api.com/api/v1',
 
   // Duende IdentityServer Configuration
-  identityServerUrl: 'https://sts.skoruba.local',
+  identityServerUrl: 'https://localhost:44310',
   clientId: 'TalentManagement',
-  scope: 'openid profile email api',
+  scope: 'openid profile email roles app.api.talentmanagement.read app.api.talentmanagement.write',
 
   // Feature Flags
   allowAnonymousAccess: false,
