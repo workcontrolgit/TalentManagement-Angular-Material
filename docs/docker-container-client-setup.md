@@ -21,7 +21,7 @@ This Angular client is part of the **CAT (Client, API, Token Service) pattern**:
 
 **Your Environment:**
 - ✅ **API:** Running in Docker Desktop at `https://localhost:44378`
-- ✅ **IdentityServer (STS):** Running in Docker Desktop at `https://sts.skoruba.local` (via nginx proxy)
+- ✅ **IdentityServer (STS):** Running in Docker Desktop at `https://localhost:44310`
 - 🎯 **Angular Client:** To be containerized (this guide)
 
 **Docker Strategy:**
@@ -135,7 +135,7 @@ The browser makes requests to API and IdentityServer, so URLs must be browser-re
 export const environment = {
   production: false,
   apiUrl: 'https://localhost:44378/api/v1',  // ← Browser-reachable (API in Docker)
-  identityServerUrl: 'https://sts.skoruba.local',  // ← Browser-reachable (STS in Docker via nginx)
+  identityServerUrl: 'https://localhost:44310',  // ← Browser-reachable (STS in Docker)
   clientId: 'TalentManagement',
   scope: 'openid profile email roles app.api.talentmanagement.read app.api.talentmanagement.write',
   allowAnonymousAccess: true,
@@ -144,9 +144,8 @@ export const environment = {
 
 **Tasks:**
 - [ ] Verify `apiUrl` is `https://localhost:44378/api/v1` (API running in Docker Desktop)
-- [ ] Verify `identityServerUrl` is `https://sts.skoruba.local` (STS running in Docker Desktop via nginx proxy)
+- [ ] Verify `identityServerUrl` is `https://localhost:44310` (STS running in Docker Desktop)
 - [ ] DO NOT change to Docker internal service names like `http://api:5000` - those won't work in browser
-- [ ] Ensure Windows hosts file has entry: `127.0.0.1  sts.skoruba.local` (see troubleshooting for details)
 
 **Note:** API and STS are already configured and running in Docker Desktop. No changes needed to their configuration unless you encounter CORS/authentication errors (see troubleshooting section).
 
@@ -183,41 +182,18 @@ export const environment = {
 - [ ] If API requests fail: Check browser Network tab for CORS errors
 - [ ] If CORS errors: See "CORS and Client Setup" section below
 - [ ] If "Connection refused": Ensure API and IdentityServer Docker containers are running
-- [ ] Browser can directly open `https://sts.skoruba.local` (IdentityServer) and `https://localhost:44378/swagger` (API)
+- [ ] Browser can directly open `https://localhost:44310` (IdentityServer) and `https://localhost:44378/swagger` (API)
 
 **Authentication Issues:**
 - [ ] If "invalid_scope": Verify `environment.ts` scope matches IdentityServer `AllowedScopes` (see CORS section below)
 - [ ] If redirect loop: Check IdentityServer RedirectUris (see CORS section below)
 - [ ] If logout fails: Check PostLogoutRedirectUris (see CORS section below)
-- [ ] If "sts.skoruba.local not found": Add to hosts file (see CORS section below)
 
 **CORS and Client Setup (If Authentication/CORS Issues Occur):**
 
 The API and STS are already configured, but if you encounter issues, verify these settings:
 
-**1. Check Windows Hosts File** (`C:\Windows\System32\drivers\etc\hosts`):
-
-The `sts.skoruba.local` domain must resolve to localhost for your browser to reach the STS.
-
-**Required entries:**
-```
-127.0.0.1    sts.skoruba.local
-127.0.0.1    admin.skoruba.local
-127.0.0.1    admin-api.skoruba.local
-```
-
-**Add via PowerShell (Run as Administrator):**
-```powershell
-Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "`n127.0.0.1    sts.skoruba.local`n127.0.0.1    admin.skoruba.local`n127.0.0.1    admin-api.skoruba.local"
-```
-
-**Or edit manually:**
-- Open Notepad as Administrator
-- Open `C:\Windows\System32\drivers\etc\hosts`
-- Add the three lines above
-- Save and close
-
-**2. Verify API CORS Configuration** (`ApiResources/TalentManagement-API/appsettings.json`):
+**1. Verify API CORS Configuration** (`ApiResources/TalentManagement-API/appsettings.json`):
 
 Should allow Angular origin:
 ```json
@@ -231,7 +207,7 @@ Should allow Angular origin:
 }
 ```
 
-**3. Verify IdentityServer Client Configuration** (`TokenService/Duende-IdentityServer/shared/identityserverdata.json`):
+**2. Verify IdentityServer Client Configuration** (`TokenService/Duende-IdentityServer/shared/identityserverdata.json`):
 
 The TalentManagement client should have:
 ```json
@@ -266,14 +242,14 @@ The TalentManagement client should have:
 }
 ```
 
-**4. Verification Steps:**
-- [ ] Open `https://sts.skoruba.local` in browser (should load IdentityServer page, not DNS error)
+**3. Verification Steps:**
+- [ ] Open `https://localhost:44310` in browser (should load IdentityServer page)
 - [ ] Open `https://localhost:44378/swagger` in browser (should load API documentation)
 - [ ] Check browser DevTools → Network tab for CORS errors during login
 - [ ] Verify Angular `clientId` in `environment.ts` matches IdentityServer client configuration
 - [ ] Verify Angular `scope` in `environment.ts` matches IdentityServer `AllowedScopes` exactly
 
-**5. If Configuration Changes Are Needed:**
+**4. If Configuration Changes Are Needed:**
 
 After modifying STS or API configuration files:
 
@@ -325,8 +301,7 @@ For live code changes without rebuilding:
 
 **Prerequisites:**
 - ✅ API running in Docker Desktop at `https://localhost:44378`
-- ✅ IdentityServer running in Docker Desktop at `https://sts.skoruba.local`
-- ✅ Windows hosts file has `127.0.0.1  sts.skoruba.local` entry
+- ✅ IdentityServer running in Docker Desktop at `https://localhost:44310`
 
 ```powershell
 # From repo root
@@ -411,7 +386,7 @@ For this project, Angular runs in a container, but **the Angular code executes i
 | Service | Component | URL Type | Value | Location |
 |---------|-----------|----------|-------|----------|
 | IdentityServer | Browser | Authority | `https://localhost:44310` | `environment.ts` |
-| IdentityServer | API Server | Authority | `https://localhost:44310` or `https://identityserver:443` | `appsettings.json` |
+| IdentityServer | API Server | Authority | `https://localhost:44310` | `appsettings.json` |
 | API | Browser | Base URL | `https://localhost:44378/api/v1` | `environment.ts` |
 | Angular | Browser | Origin | `http://localhost:4200` | CORS config in API/STS |
 
