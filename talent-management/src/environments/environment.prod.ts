@@ -12,5 +12,5 @@ export const environment = {
   scope: 'openid profile email roles app.api.talentmanagement.read app.api.talentmanagement.write',
 
   // Feature Flags
-  allowAnonymousAccess: false,
+  allowAnonymousAccess: true,
 };
