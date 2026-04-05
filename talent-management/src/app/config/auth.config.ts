@@ -1,15 +1,18 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
 import { environment } from '../../environments/environment';
 
+// Base URL including subfolder (e.g. /AngularNetTutorial/ on GitHub Pages)
+const appBaseUrl = document.baseURI.endsWith('/') ? document.baseURI.slice(0, -1) : document.baseURI;
+
 export const authConfig: AuthConfig = {
   // Duende IdentityServer URL
   issuer: environment.identityServerUrl,
 
   // URL of the Angular app (where IdentityServer will redirect after login)
-  redirectUri: window.location.origin + '/callback',
+  redirectUri: appBaseUrl + '/callback',
 
   // URL to redirect after logout
-  postLogoutRedirectUri: window.location.origin,
+  postLogoutRedirectUri: appBaseUrl,
 
   // The Angular app's client ID as registered with IdentityServer
   clientId: environment.clientId,
@@ -27,7 +30,7 @@ export const authConfig: AuthConfig = {
   useSilentRefresh: true,
 
   // Silent refresh redirect URI
-  silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
+  silentRefreshRedirectUri: appBaseUrl + '/silent-refresh.html',
 
   // Time before token expires to trigger silent refresh (in seconds)
   silentRefreshTimeout: 5000,
