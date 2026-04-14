@@ -13,4 +13,5 @@ export const environment = {
 
   // Feature Flags
   allowAnonymousAccess: true,
+  aiEnabled: true,
 };

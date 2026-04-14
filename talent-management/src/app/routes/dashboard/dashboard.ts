@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -9,10 +9,13 @@ import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { PageHeader } from '@shared';
 import { HasRoleDirective } from '../../shared/directives/has-role.directive';
 import { DashboardMetrics, DepartmentMetric, PositionMetric, SalaryRangeMetric } from '../../models';
-import { DashboardService } from '../../services/api';
+import { DashboardService, AiService } from '../../services/api';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,16 +35,24 @@ import { DashboardService } from '../../services/api';
     HasRoleDirective,
   ],
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
+  private aiService = inject(AiService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private destroy$ = new Subject<void>();
 
   // Loading state
   loading = true;
 
   // Dashboard metrics
   metrics: DashboardMetrics | null = null;
+
+  // AI Insights state
+  aiEnabled = environment.aiEnabled;
+  aiInsight = '';
+  aiInsightLoading = false;
+  aiInsightError = '';
 
   // Chart configurations
   departmentChartData: ChartConfiguration<'pie'>['data'] | null = null;
@@ -141,6 +152,11 @@ export class Dashboard implements OnInit {
     this.loadDashboardMetrics();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadDashboardMetrics(): void {
     this.loading = true;
 
@@ -149,6 +165,9 @@ export class Dashboard implements OnInit {
         this.metrics = metrics;
         this.prepareCharts(metrics);
         this.loading = false;
+        if (this.aiEnabled) {
+          this.loadAiInsight(metrics);
+        }
       },
       error: error => {
         console.error('Error loading dashboard metrics:', error);
@@ -156,6 +175,34 @@ export class Dashboard implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  private loadAiInsight(metrics: DashboardMetrics): void {
+    this.aiInsightLoading = true;
+    this.aiInsightError = '';
+    this.aiInsight = '';
+
+    const systemPrompt = `You are an HR analytics assistant. Analyze the following workforce metrics and provide a concise executive summary (3-4 sentences) highlighting key observations, any notable patterns, and one actionable recommendation. Be specific — reference the actual numbers.
+
+Workforce Metrics:
+${JSON.stringify(metrics, null, 2)}`;
+
+    const question = 'Provide a brief executive summary of the current workforce.';
+
+    this.aiService
+      .chat(question, systemPrompt)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          this.aiInsight = response.reply;
+          this.aiInsightLoading = false;
+        },
+        error: err => {
+          this.aiInsightError =
+            err?.error?.detail ?? 'AI insights unavailable. Is the API running with AiEnabled: true?';
+          this.aiInsightLoading = false;
+        },
+      });
   }
 
   private prepareCharts(metrics: DashboardMetrics): void {

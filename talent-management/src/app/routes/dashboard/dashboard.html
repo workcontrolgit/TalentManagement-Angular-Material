@@ -1,5 +1,34 @@
 <page-header />
 
+<!-- AI Insights Card (hidden when aiEnabled is false) -->
+<mat-card *ngIf="aiEnabled" class="ai-insights-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>smart_toy</mat-icon>
+    <mat-card-title>AI Workforce Insights</mat-card-title>
+    <mat-card-subtitle>Generated from live dashboard metrics</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+
+    <!-- Loading -->
+    <div *ngIf="aiInsightLoading" class="ai-insight-loading">
+      <mat-spinner diameter="24"></mat-spinner>
+      <span>Analyzing workforce data&hellip;</span>
+    </div>
+
+    <!-- Insight text -->
+    <p *ngIf="!aiInsightLoading && aiInsight" class="ai-insight-text">
+      {{ aiInsight }}
+    </p>
+
+    <!-- Error -->
+    <p *ngIf="!aiInsightLoading && aiInsightError" class="ai-insight-error">
+      <mat-icon>warning</mat-icon>
+      {{ aiInsightError }}
+    </p>
+
+  </mat-card-content>
+</mat-card>
+
 <!-- Loading Spinner -->
 <div *ngIf="loading" class="loading-spinner">
   <mat-spinner></mat-spinner>

@@ -1,3 +1,4 @@
+export * from './ai.service';
 export * from './base-api.service';
 export * from './dashboard.service';
 export * from './department.service';
