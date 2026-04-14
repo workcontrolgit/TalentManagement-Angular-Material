@@ -7,16 +7,10 @@ export interface AiChatResponse {
   reply: string;
 }
 
-export interface HrInsightDto {
+export interface HrInsightResponse {
   question: string;
   answer: string;
   executionTimeMs: number;
-}
-
-export interface HrInsightResult {
-  succeeded: boolean;
-  data: HrInsightDto;
-  message?: string;
 }
 
 /**
@@ -46,8 +40,8 @@ export class AiService {
    * Ask the HR AI assistant a data-aware question.
    * Calls POST /api/v1/ai/hr-insight — the backend injects live workforce metrics.
    */
-  hrInsight(question: string): Observable<HrInsightResult> {
-    return this.http.post<HrInsightResult>(`${this.apiUrl}/ai/hr-insight`, {
+  hrInsight(question: string): Observable<HrInsightResponse> {
+    return this.http.post<HrInsightResponse>(`${this.apiUrl}/ai/hr-insight`, {
       question,
     });
   }

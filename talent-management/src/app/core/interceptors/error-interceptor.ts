@@ -37,7 +37,8 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
         return throwError(() => error);
       }
 
-      if (errorPages.includes(error.status)) {
+      const isAiRequest = req.url.includes('/ai/');
+      if (!isAiRequest && errorPages.includes(error.status)) {
         router.navigateByUrl(`/${error.status}`, {
           skipLocationChange: true,
         });

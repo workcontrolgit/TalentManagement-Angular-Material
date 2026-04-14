@@ -12,7 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PageHeader } from '@shared';
-import { AiService } from '../../services/api/ai.service';
+import { AiService, HrInsightResponse } from '../../services/api/ai.service';
 import { environment } from '../../../environments/environment';
 
 export interface ChatMessage {
@@ -95,16 +95,12 @@ export class AiChatComponent implements OnDestroy {
       .hrInsight(question)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: result => {
-          if (result.succeeded && result.data) {
-            this.hrMessages.push({
-              role: 'assistant',
-              content: result.data.answer,
-              executionTimeMs: result.data.executionTimeMs,
-            });
-          } else {
-            this.hrError = result.message ?? 'Unexpected response from HR insights endpoint.';
-          }
+        next: (result: HrInsightResponse) => {
+          this.hrMessages.push({
+            role: 'assistant',
+            content: result.answer,
+            executionTimeMs: result.executionTimeMs,
+          });
           this.hrLoading = false;
         },
         error: err => {
