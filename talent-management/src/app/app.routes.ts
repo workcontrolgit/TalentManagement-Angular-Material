@@ -23,6 +23,7 @@ import { SalaryRangeDetailComponent } from './routes/salary-ranges/salary-range-
 import { SalaryRangeFormComponent } from './routes/salary-ranges/salary-range-form.component';
 import { ProfileOverviewComponent } from './routes/profile/profile-overview.component';
 import { ProfileSettingsComponent } from './routes/profile/profile-settings.component';
+import { AiChatComponent } from './routes/ai-chat/ai-chat.component';
 
 export const routes: Routes = [
   {
@@ -57,6 +58,7 @@ export const routes: Routes = [
           { path: '', redirectTo: 'overview', pathMatch: 'full' },
         ],
       },
+      { path: 'ai-chat', component: AiChatComponent },
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },

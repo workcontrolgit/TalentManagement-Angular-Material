@@ -2,6 +2,45 @@ mat-card {
   margin: 16px;
 }
 
+.nl-search-card {
+  margin-bottom: 0;
+
+  .nl-search-field {
+    width: 100%;
+  }
+
+  .nl-parsed-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 4px;
+
+    mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      color: #1976d2;
+    }
+  }
+
+  .nl-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #b00020;
+    margin-top: 4px;
+
+    mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+    }
+  }
+}
+
 mat-card-header {
   display: flex;
   align-items: center;

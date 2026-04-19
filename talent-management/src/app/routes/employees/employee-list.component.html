@@ -1,5 +1,41 @@
 <page-header></page-header>
 
+<!-- Natural Language Search Bar (hidden when aiEnabled is false) -->
+<mat-card *ngIf="aiEnabled" class="nl-search-card">
+  <mat-card-content>
+    <mat-form-field appearance="outline" class="nl-search-field">
+      <mat-label>
+        <mat-icon>smart_toy</mat-icon>
+        Search in plain English
+      </mat-label>
+      <input
+        matInput
+        #nlInput
+        type="text"
+        [value]="nlQuery"
+        (input)="onNlQueryChange(nlInput.value)"
+        placeholder='e.g. "find all engineers" or "employees named Johnson"'
+        autocomplete="off"
+      />
+      <mat-icon matSuffix *ngIf="!nlLoading && !nlQuery">search</mat-icon>
+      <mat-spinner matSuffix diameter="20" *ngIf="nlLoading"></mat-spinner>
+      <button mat-icon-button matSuffix *ngIf="nlQuery && !nlLoading" (click)="clearNlSearch()" type="button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div *ngIf="nlParsedExpression && !nlLoading" class="nl-parsed-hint">
+      <mat-icon>auto_awesome</mat-icon>
+      <span>AI interpreted: <em>{{ nlParsedExpression }}</em></span>
+    </div>
+
+    <div *ngIf="nlError" class="nl-error">
+      <mat-icon>warning</mat-icon>
+      <span>{{ nlError }}</span>
+    </div>
+  </mat-card-content>
+</mat-card>
+
 <mat-card>
   <mat-card-header>
     <mat-card-title>Employee Directory</mat-card-title>
