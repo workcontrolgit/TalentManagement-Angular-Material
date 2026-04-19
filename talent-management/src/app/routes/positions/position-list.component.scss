@@ -2,6 +2,27 @@ mat-card {
   margin: 16px;
 }
 
+.nl-search-card {
+  margin: 16px 16px 0;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+  }
+}
+
+.nl-parsed-hint {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.nl-error {
+  color: #f44336;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
 mat-card-header {
   display: flex;
   align-items: center;
