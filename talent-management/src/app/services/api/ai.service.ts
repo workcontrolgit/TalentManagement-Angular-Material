@@ -13,6 +13,17 @@ export interface HrInsightResponse {
   executionTimeMs: number;
 }
 
+export interface NlEmployeeFilter {
+  originalQuery: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  employeeNumber: string;
+  positionTitle: string;
+  parsedExpression: string;
+  executionTimeMs: number;
+}
+
 /**
  * AI API Service
  * Calls /api/v1/ai/chat and /api/v1/ai/hr-insight endpoints.
@@ -44,5 +55,13 @@ export class AiService {
     return this.http.post<HrInsightResponse>(`${this.apiUrl}/ai/hr-insight`, {
       question,
     });
+  }
+
+  /**
+   * Parse a natural language employee search query into structured filter parameters.
+   * Calls POST /api/v1/ai/nl-employee-search
+   */
+  nlEmployeeSearch(query: string): Observable<NlEmployeeFilter> {
+    return this.http.post<NlEmployeeFilter>(`${this.apiUrl}/ai/nl-employee-search`, { query });
   }
 }
