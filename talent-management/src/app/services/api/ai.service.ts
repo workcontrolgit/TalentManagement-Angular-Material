@@ -24,6 +24,17 @@ export interface NlEmployeeFilter {
   executionTimeMs: number;
 }
 
+export interface SemanticPositionResult {
+  id: string;
+  positionNumber: string;
+  positionTitle: string;
+  positionDescription: string;
+  departmentName: string;
+  salaryRangeName: string;
+  score: number;
+  executionTimeMs: number;
+}
+
 /**
  * AI API Service
  * Calls /api/v1/ai/chat and /api/v1/ai/hr-insight endpoints.
@@ -63,5 +74,17 @@ export class AiService {
    */
   nlEmployeeSearch(query: string): Observable<NlEmployeeFilter> {
     return this.http.post<NlEmployeeFilter>(`${this.apiUrl}/ai/nl-employee-search`, { query });
+  }
+
+  /**
+   * Find positions semantically similar to a natural-language query.
+   * Calls POST /api/v1/positions/semantic-search
+   * Requires VectorSearchEnabled feature flag on the .NET API.
+   */
+  semanticPositionSearch(queryText: string, topK = 10): Observable<SemanticPositionResult[]> {
+    return this.http.post<SemanticPositionResult[]>(`${this.apiUrl}/positions/semantic-search`, {
+      queryText,
+      topK,
+    });
   }
 }
