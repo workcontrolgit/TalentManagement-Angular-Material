@@ -18,10 +18,9 @@ import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { PageHeader } from '@shared/components/page-header/page-header';
 import { HasRoleDirective } from '../../shared/directives/has-role.directive';
 import { Position, PagedResponse, QueryParams } from '../../models';
-import { PositionService, AiService, SemanticPositionResult } from '../../services/api';
+import { PositionService } from '../../services/api';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
-import { environment } from '../../../environments/environment';
-import { debounceTime, Subject, switchMap, catchError, of, takeUntil } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-position-list',
@@ -49,7 +48,6 @@ import { debounceTime, Subject, switchMap, catchError, of, takeUntil } from 'rxj
 })
 export class PositionListComponent implements OnInit, AfterViewInit, OnDestroy {
   private positionService = inject(PositionService);
-  private aiService = inject(AiService);
   private authService = inject(OidcAuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -61,14 +59,6 @@ export class PositionListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
 
   positions: Position[] = [];
-
-  // Semantic search
-  aiEnabled = environment.aiEnabled;
-  semanticQuery = '';
-  semanticLoading = false;
-  semanticError = '';
-  semanticResults: SemanticPositionResult[] | null = null;
-  private semanticSearch$ = new Subject<string>();
   loading = false;
   displayedColumns: string[] = ['positionNumber', 'positionTitle', 'departmentId', 'salaryRangeId', 'actions'];
 
@@ -90,7 +80,6 @@ export class PositionListComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadPositions();
     });
 
-    this.setupSemanticSearch();
     this.loadPositions();
   }
 
@@ -101,46 +90,6 @@ export class PositionListComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  private setupSemanticSearch(): void {
-    this.semanticSearch$
-      .pipe(
-        debounceTime(600),
-        switchMap(query => {
-          if (!query || query.trim().length < 3) {
-            this.semanticResults = null;
-            this.semanticError = '';
-            return of(null);
-          }
-          this.semanticLoading = true;
-          this.semanticError = '';
-          return this.aiService.semanticPositionSearch(query.trim()).pipe(
-            catchError(err => {
-              this.semanticError = err?.error?.detail ?? 'Semantic search failed. Please try again.';
-              return of(null);
-            })
-          );
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(results => {
-        this.semanticLoading = false;
-        if (results !== null) {
-          this.semanticResults = results;
-        }
-      });
-  }
-
-  onSemanticQueryChange(value: string): void {
-    this.semanticQuery = value;
-    this.semanticSearch$.next(value);
-  }
-
-  clearSemanticSearch(): void {
-    this.semanticQuery = '';
-    this.semanticResults = null;
-    this.semanticError = '';
   }
 
   loadPositions(): void {
