@@ -18,12 +18,10 @@ import { PageHeader } from '@shared/components/page-header/page-header';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { Employee } from '../../models';
 import { EmployeeService } from '../../services/api';
-import { AiService, NlEmployeeFilter } from '../../services/api/ai.service';
 import { OidcAuthService } from '../../core/authentication/oidc-auth.service';
 import { HasRoleDirective } from '../../shared/directives/has-role.directive';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, map, startWith, catchError, takeUntil } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-employee-list',
@@ -51,7 +49,6 @@ import { environment } from '../../../environments/environment';
 })
 export class EmployeeListComponent implements OnInit, OnDestroy {
   private employeeService = inject(EmployeeService);
-  private aiService = inject(AiService);
   private authService = inject(OidcAuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
@@ -75,14 +72,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   filteredEmails$!: Observable<string[]>;
   filteredPositionTitles$!: Observable<string[]>;
 
-  // AI Natural Language Search
-  aiEnabled = environment.aiEnabled;
-  nlQuery = '';
-  nlLoading = false;
-  nlError = '';
-  nlParsedExpression = '';
-  private nlSearch$ = new Subject<string>();
-
   private destroy$ = new Subject<void>();
 
   // Table columns
@@ -100,7 +89,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     this.setupAutocomplete();
     this.setupAutoSubmit();
     this.loadEmployees();
-    this.setupNlSearch();
   }
 
   ngOnDestroy(): void {
@@ -318,61 +306,4 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     return this.authService.isHRAdmin() || this.authService.isManager();
   }
 
-  // NL Search ---------------------------------------------------------------
-
-  onNlQueryChange(value: string): void {
-    this.nlQuery = value;
-    this.nlSearch$.next(value);
-  }
-
-  clearNlSearch(): void {
-    this.nlQuery = '';
-    this.nlParsedExpression = '';
-    this.nlError = '';
-    this.searchForm.reset();
-    this.pageNumber = 1;
-    this.loadEmployees();
-  }
-
-  private setupNlSearch(): void {
-    this.nlSearch$
-      .pipe(
-        debounceTime(600),
-        distinctUntilChanged(),
-        switchMap(query => {
-          if (!query || query.length < 3) {
-            this.nlParsedExpression = '';
-            this.nlError = '';
-            return of(null);
-          }
-          this.nlLoading = true;
-          this.nlError = '';
-          return this.aiService.nlEmployeeSearch(query).pipe(
-            catchError(err => {
-              this.nlLoading = false;
-              this.nlError = err?.error?.detail ?? 'Could not parse query. Try rephrasing.';
-              return of(null);
-            })
-          );
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(filter => {
-        if (filter) {
-          this.nlLoading = false;
-          this.nlParsedExpression = filter.parsedExpression;
-          this.applyNlFilter(filter);
-        }
-      });
-  }
-
-  private applyNlFilter(filter: NlEmployeeFilter): void {
-    this.searchForm.patchValue({
-      FirstName:      filter.firstName,
-      LastName:       filter.lastName,
-      Email:          filter.email,
-      EmployeeNumber: filter.employeeNumber,
-      PositionTitle:  filter.positionTitle,
-    });
-  }
 }
