@@ -23,7 +23,10 @@ import { SalaryRangeDetailComponent } from './routes/salary-ranges/salary-range-
 import { SalaryRangeFormComponent } from './routes/salary-ranges/salary-range-form.component';
 import { ProfileOverviewComponent } from './routes/profile/profile-overview.component';
 import { ProfileSettingsComponent } from './routes/profile/profile-settings.component';
-import { AiChatComponent } from './routes/ai-chat/ai-chat.component';
+import { AiAssistantComponent } from './routes/ai/ai-assistant/ai-assistant.component';
+import { AiHrInsightComponent } from './routes/ai/ai-hr-insight/ai-hr-insight.component';
+import { AiNlSearchComponent } from './routes/ai/ai-nl-search/ai-nl-search.component';
+import { AiVectorSearchComponent } from './routes/ai/ai-vector-search/ai-vector-search.component';
 
 export const routes: Routes = [
   {
@@ -58,7 +61,17 @@ export const routes: Routes = [
           { path: '', redirectTo: 'overview', pathMatch: 'full' },
         ],
       },
-      { path: 'ai-chat', component: AiChatComponent },
+      {
+        path: 'ai',
+        children: [
+          { path: 'assistant', component: AiAssistantComponent },
+          { path: 'hr-insight', component: AiHrInsightComponent },
+          { path: 'nl-search', component: AiNlSearchComponent },
+          { path: 'vector-search', component: AiVectorSearchComponent },
+          { path: '', redirectTo: 'assistant', pathMatch: 'full' },
+        ],
+      },
+      { path: 'ai-chat', redirectTo: 'ai/assistant', pathMatch: 'full' },
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },

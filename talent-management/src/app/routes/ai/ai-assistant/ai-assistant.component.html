@@ -1,0 +1,77 @@
+<page-header />
+
+<!-- AI Disabled Banner -->
+<div *ngIf="!aiEnabled" class="ai-disabled-banner">
+  <mat-card class="disabled-card">
+    <mat-card-content>
+      <div class="disabled-content">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>AI features are disabled.</strong>
+          <p>
+            To enable AI, set <code>aiEnabled: true</code> in
+            <code>src/environments/environment.ts</code> and
+            <code>"AiEnabled": true</code> in the API's <code>appsettings.json</code>.
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Chat UI -->
+<div *ngIf="aiEnabled" class="chat-container">
+  <mat-card class="chat-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>smart_toy</mat-icon>
+      <mat-card-title>AI Assistant</mat-card-title>
+      <mat-card-subtitle>Ask anything — general knowledge, writing help, code questions</mat-card-subtitle>
+      <div class="header-actions">
+        <button mat-icon-button (click)="clear()" matTooltip="Clear conversation">
+          <mat-icon>delete_sweep</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Message History -->
+      <div class="message-list" *ngIf="messages.length > 0">
+        <div *ngFor="let msg of messages" class="message" [class.user-message]="msg.role === 'user'" [class.assistant-message]="msg.role === 'assistant'">
+          <mat-icon class="avatar-icon">{{ msg.role === 'user' ? 'person' : 'smart_toy' }}</mat-icon>
+          <div class="bubble">{{ msg.content }}</div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="messages.length === 0 && !loading">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <p>Start a conversation</p>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-row" *ngIf="loading">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span>Thinking…</span>
+      </div>
+
+      <!-- Error -->
+      <div class="error-row" *ngIf="error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions class="input-area">
+      <mat-form-field appearance="outline" class="message-input">
+        <mat-label>Message</mat-label>
+        <input matInput [(ngModel)]="input" (keydown)="onKeydown($event)" placeholder="Ask the AI assistant anything…" [disabled]="loading" />
+      </mat-form-field>
+      <button mat-fab extended color="primary" (click)="send()" [disabled]="!input.trim() || loading">
+        <mat-icon>send</mat-icon>
+        Send
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
