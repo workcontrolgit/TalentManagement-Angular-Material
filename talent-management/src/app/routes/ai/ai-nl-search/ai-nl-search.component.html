@@ -1,0 +1,120 @@
+<page-header />
+
+<!-- AI Disabled Banner -->
+<div *ngIf="!aiEnabled" class="ai-disabled-banner">
+  <mat-card class="disabled-card">
+    <mat-card-content>
+      <div class="disabled-content">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>AI features are disabled.</strong>
+          <p>
+            To enable AI, set <code>aiEnabled: true</code> in
+            <code>src/environments/environment.ts</code> and
+            <code>"AiEnabled": true</code> in the API's <code>appsettings.json</code>.
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- NL Search UI -->
+<div *ngIf="aiEnabled">
+  <mat-card class="search-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>manage_search</mat-icon>
+      <mat-card-title>Natural Language Employee Search</mat-card-title>
+      <mat-card-subtitle>Describe the employee you're looking for in plain English</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Search Input -->
+      <div class="search-row">
+        <mat-form-field appearance="outline" class="search-input">
+          <mat-label>Search employees</mat-label>
+          <input
+            matInput
+            [(ngModel)]="query"
+            (ngModelChange)="onQueryChange()"
+            placeholder="e.g. software engineers in IT department hired last year"
+            [disabled]="loading" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <button mat-stroked-button (click)="clear()" [disabled]="!query && results.length === 0">
+          <mat-icon>clear</mat-icon>
+          Clear
+        </button>
+      </div>
+
+      <!-- Parsed Expression -->
+      <div class="parsed-expression" *ngIf="parsedExpression">
+        <mat-icon>info_outline</mat-icon>
+        <span>Parsed filter: <em>{{ parsedExpression }}</em></span>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-row" *ngIf="loading">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span>Parsing query and searching…</span>
+      </div>
+
+      <!-- Error -->
+      <div class="error-row" *ngIf="error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+
+      <!-- Results Table -->
+      <div class="table-container" *ngIf="!loading && results.length > 0">
+        <table mat-table [dataSource]="results" class="results-table">
+          <ng-container matColumnDef="employeeNumber">
+            <th mat-header-cell *matHeaderCellDef>Employee #</th>
+            <td mat-cell *matCellDef="let emp">{{ emp.employeeNumber }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let emp">{{ emp.firstName }} {{ emp.lastName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="positionTitle">
+            <th mat-header-cell *matHeaderCellDef>Position</th>
+            <td mat-cell *matCellDef="let emp">{{ emp.positionTitle }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="departmentName">
+            <th mat-header-cell *matHeaderCellDef>Department</th>
+            <td mat-cell *matCellDef="let emp">{{ emp.departmentName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let emp">
+              <button mat-icon-button color="primary" (click)="viewEmployee(emp.id)" matTooltip="View Employee">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <p class="result-count">{{ results.length }} result(s) found</p>
+      </div>
+
+      <!-- Empty state after search -->
+      <div class="empty-state" *ngIf="!loading && !error && query && results.length === 0">
+        <mat-icon>person_search</mat-icon>
+        <p>No employees matched your query</p>
+      </div>
+
+      <!-- Initial state -->
+      <div class="empty-state" *ngIf="!loading && !error && !query">
+        <mat-icon>manage_search</mat-icon>
+        <p>Type a natural language query to search employees</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
