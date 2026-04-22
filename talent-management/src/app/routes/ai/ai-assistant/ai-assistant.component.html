@@ -64,7 +64,7 @@
     <mat-divider></mat-divider>
 
     <mat-card-actions class="input-area">
-      <mat-form-field appearance="outline" class="message-input">
+      <mat-form-field appearance="outline" class="message-input" subscriptSizing="dynamic">
         <mat-label>Message</mat-label>
         <input matInput [(ngModel)]="input" (keydown)="onKeydown($event)" placeholder="Ask the AI assistant anything…" [disabled]="loading" />
       </mat-form-field>
