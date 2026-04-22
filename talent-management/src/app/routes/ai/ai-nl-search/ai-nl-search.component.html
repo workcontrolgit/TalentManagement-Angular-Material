@@ -1,7 +1,7 @@
 <page-header />
 
 <!-- AI Disabled Banner -->
-<div *ngIf="!aiEnabled" class="ai-disabled-banner">
+@if (!aiEnabled) {
   <mat-card class="disabled-card">
     <mat-card-content>
       <div class="disabled-content">
@@ -17,10 +17,10 @@
       </div>
     </mat-card-content>
   </mat-card>
-</div>
+}
 
 <!-- NL Search UI -->
-<div *ngIf="aiEnabled">
+@if (aiEnabled) {
   <mat-card class="search-card">
     <mat-card-header>
       <mat-icon mat-card-avatar>manage_search</mat-icon>
@@ -31,7 +31,7 @@
     <mat-card-content>
       <!-- Search Input -->
       <div class="search-row">
-        <mat-form-field appearance="outline" class="search-input">
+        <mat-form-field appearance="outline" class="search-input" subscriptSizing="dynamic">
           <mat-label>Search employees</mat-label>
           <input
             matInput
@@ -48,73 +48,85 @@
       </div>
 
       <!-- Parsed Expression -->
-      <div class="parsed-expression" *ngIf="parsedExpression">
-        <mat-icon>info_outline</mat-icon>
-        <span>Parsed filter: <em>{{ parsedExpression }}</em></span>
-      </div>
+      @if (parsedExpression) {
+        <div class="parsed-expression">
+          <mat-icon>info_outline</mat-icon>
+          <span>Parsed filter: <em>{{ parsedExpression }}</em></span>
+        </div>
+      }
 
       <!-- Loading -->
-      <div class="loading-row" *ngIf="loading">
-        <mat-spinner diameter="24"></mat-spinner>
-        <span>Parsing query and searching…</span>
-      </div>
+      @if (loading) {
+        <div class="loading-row">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span>Parsing query and searching…</span>
+        </div>
+      }
 
       <!-- Error -->
-      <div class="error-row" *ngIf="error">
-        <mat-icon>error_outline</mat-icon>
-        <span>{{ error }}</span>
-      </div>
+      @if (error) {
+        <div class="error-row">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error }}</span>
+        </div>
+      }
 
       <!-- Results Table -->
-      <div class="table-container" *ngIf="!loading && results.length > 0">
-        <table mat-table [dataSource]="results" class="results-table">
-          <ng-container matColumnDef="employeeNumber">
-            <th mat-header-cell *matHeaderCellDef>Employee #</th>
-            <td mat-cell *matCellDef="let emp">{{ emp.employeeNumber }}</td>
-          </ng-container>
+      @if (!loading && results.length > 0) {
+        <div class="table-container">
+          <table mat-table [dataSource]="results" class="results-table">
+            <ng-container matColumnDef="employeeNumber">
+              <th mat-header-cell *matHeaderCellDef>Employee #</th>
+              <td mat-cell *matCellDef="let emp">{{ emp.employeeNumber }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="fullName">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let emp">{{ emp.firstName }} {{ emp.lastName }}</td>
-          </ng-container>
+            <ng-container matColumnDef="fullName">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let emp">{{ emp.firstName }} {{ emp.lastName }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="positionTitle">
-            <th mat-header-cell *matHeaderCellDef>Position</th>
-            <td mat-cell *matCellDef="let emp">{{ emp.positionTitle }}</td>
-          </ng-container>
+            <ng-container matColumnDef="positionTitle">
+              <th mat-header-cell *matHeaderCellDef>Position</th>
+              <td mat-cell *matCellDef="let emp">{{ emp.positionTitle || emp.position?.positionTitle || '-' }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="departmentName">
-            <th mat-header-cell *matHeaderCellDef>Department</th>
-            <td mat-cell *matCellDef="let emp">{{ emp.departmentName }}</td>
-          </ng-container>
+            <ng-container matColumnDef="departmentName">
+              <th mat-header-cell *matHeaderCellDef>Department</th>
+              <td mat-cell *matCellDef="let emp">{{ getDepartmentName(emp) }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let emp">
-              <button mat-icon-button color="primary" (click)="viewEmployee(emp.id)" matTooltip="View Employee">
-                <mat-icon>visibility</mat-icon>
-              </button>
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let emp">
+                <button mat-icon-button color="primary" (click)="viewEmployee(emp.id)" matTooltip="View Employee">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
 
-        <p class="result-count">{{ results.length }} result(s) found</p>
-      </div>
+          <p class="result-count">{{ results.length }} result(s) found</p>
+        </div>
+      }
 
       <!-- Empty state after search -->
-      <div class="empty-state" *ngIf="!loading && !error && query && results.length === 0">
-        <mat-icon>person_search</mat-icon>
-        <p>No employees matched your query</p>
-      </div>
+      @if (!loading && !error && query && results.length === 0) {
+        <div class="empty-state">
+          <mat-icon>person_search</mat-icon>
+          <p>No employees matched your query</p>
+        </div>
+      }
 
       <!-- Initial state -->
-      <div class="empty-state" *ngIf="!loading && !error && !query">
-        <mat-icon>manage_search</mat-icon>
-        <p>Type a natural language query to search employees</p>
-      </div>
+      @if (!loading && !error && !query) {
+        <div class="empty-state">
+          <mat-icon>manage_search</mat-icon>
+          <p>Type a natural language query to search employees</p>
+        </div>
+      }
     </mat-card-content>
   </mat-card>
-</div>
+}

@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+
+interface ApiResult<T> {
+  isSuccess: boolean;
+  value: T;
+  errors: string[];
+}
 
 export interface AiChatResponse {
   reply: string;
@@ -63,9 +70,9 @@ export class AiService {
    * Calls POST /api/v1/ai/hr-insight — the backend injects live workforce metrics.
    */
   hrInsight(question: string): Observable<HrInsightResponse> {
-    return this.http.post<HrInsightResponse>(`${this.apiUrl}/ai/hr-insight`, {
+    return this.http.post<ApiResult<HrInsightResponse>>(`${this.apiUrl}/ai/hr-insight`, {
       question,
-    });
+    }).pipe(map(r => r.value));
   }
 
   /**

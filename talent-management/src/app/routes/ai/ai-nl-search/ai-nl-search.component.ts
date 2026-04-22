@@ -15,7 +15,7 @@ import { debounceTime, switchMap, catchError, takeUntil } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { PageHeader } from '@shared';
 import { AiService, NlEmployeeFilter } from '../../../services/api/ai.service';
-import { EmployeeService } from '../../../services/api';
+import { EmployeeService, DepartmentService } from '../../../services/api';
 import { Employee } from '../../../models';
 import { environment } from '../../../../environments/environment';
 
@@ -41,9 +41,11 @@ import { environment } from '../../../../environments/environment';
 export class AiNlSearchComponent implements OnDestroy {
   private aiService = inject(AiService);
   private employeeService = inject(EmployeeService);
+  private departmentService = inject(DepartmentService);
   private router = inject(Router);
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
+  private departmentMap = new Map<string, string>();
 
   aiEnabled = environment.aiEnabled;
 
@@ -55,6 +57,9 @@ export class AiNlSearchComponent implements OnDestroy {
   displayedColumns = ['employeeNumber', 'fullName', 'positionTitle', 'departmentName', 'actions'];
 
   constructor() {
+    this.departmentService.getAll().pipe(takeUntil(this.destroy$)).subscribe(departments => {
+      departments.forEach(d => this.departmentMap.set(d.id, d.name));
+    });
     this.searchSubject
       .pipe(
         debounceTime(600),
@@ -116,6 +121,10 @@ export class AiNlSearchComponent implements OnDestroy {
     this.results = [];
     this.parsedExpression = '';
     this.error = '';
+  }
+
+  getDepartmentName(emp: Employee): string {
+    return emp.departmentName || emp.department?.name || this.departmentMap.get(emp.departmentId) || '-';
   }
 
   viewEmployee(id: string): void {
