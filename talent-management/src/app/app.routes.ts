@@ -71,7 +71,6 @@ export const routes: Routes = [
           { path: '', redirectTo: 'assistant', pathMatch: 'full' },
         ],
       },
-      { path: 'ai-chat', redirectTo: 'ai/assistant', pathMatch: 'full' },
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },
